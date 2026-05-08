@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYXORA — Private Player</title>
+    <style>
+        /* বেসিক স্টাইল */
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* হেডার */
+        header {
+            width: 100%;
+            padding: 20px 0;
+            background-color: #111;
+            border-bottom: 2px solid #e50914; /* নেটফ্লিক্স রেড */
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .brand-name {
+            font-size: 32px;
+            font-weight: 900;
+            color: #e50914;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* প্লেয়ার কন্টেইনার */
+        .content-area {
+            width: 95%;
+            max-width: 900px;
+            margin-top: 40px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 রেশিও */
+            height: 0;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 1px solid #222;
+        }
+
+        /* আইফ্রেমকে রেসপন্সিভ করা */
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ভিডিওর নিচের টেক্সট */
+        .video-info {
+            margin-top: 20px;
+            text-align: left;
+            padding: 0 10px;
+        }
+
+        .video-info h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #efefef;
+        }
+
+        /* ফুটার */
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            color: #444;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-name">NYXORA</div>
+    </header>
+
+    <div class="content-area">
+        <div class="video-wrapper">
+            <iframe 
+                src="https://www.xvideos.com/embedframe/ookivlic4ac" 
+                scrolling="no" 
+                allowfullscreen="true">
+            </iframe>
+        </div>
+
+        <div class="video-info">
+            <h2>এখন প্লে হচ্ছে: এক্সক্লুসিভ কনটেন্ট</h2>
+            <p style="color: #888;">Nyxora Media Engine-এর মাধ্যমে সরাসরি স্ট্রিম করা হচ্ছে।</p>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 NYXORA | Built by Zaiyan
+    </footer>
+
+</body>
+</html>
