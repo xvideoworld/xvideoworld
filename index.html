@@ -3,146 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer"> <title>Nyxora Premium Streaming</title>
+    <meta name="referrer" content="no-referrer"> <title>Nyxora Premium Portal</title>
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.1);
-            --border: rgba(255, 255, 255, 0.2);
+            --accent: #38bdf8;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.05);
         }
         body {
-            background: #0f172a;
+            background-color: var(--bg);
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            font-family: sans-serif;
+        }
+        .header {
             padding: 20px;
-        }
-        header {
             text-align: center;
-            padding: 40px 0;
-        }
-        h1 {
-            color: #38bdf8;
-            font-size: 2.5rem;
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
         }
         .card {
             background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
             cursor: pointer;
         }
         .card:hover {
-            transform: translateY(-10px);
-            border-color: #38bdf8;
+            transform: scale(1.05);
+            border-color: var(--accent);
         }
         .card img {
             width: 100%;
-            height: 250px;
+            height: 200px;
             object-fit: cover;
         }
-        .card-body {
-            padding: 15px;
+        .card-info {
+            padding: 10px;
             text-align: center;
-        }
-        .card-title {
-            font-size: 1rem;
+            font-size: 14px;
             font-weight: bold;
             text-transform: capitalize;
         }
-        /* ভিডিও প্লেয়ার পপআপ */
-        #player-modal {
+        /* ভিডিও প্লেয়ার পেজ (স্মার্ট পপআপ) */
+        #video-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .player-box {
-            width: 80%;
-            max-width: 800px;
             background: #000;
-            position: relative;
+            z-index: 9999;
+            flex-direction: column;
         }
-        .close-btn {
-            position: absolute;
-            top: -40px; right: 0;
-            color: white; font-size: 30px; cursor: pointer;
+        .nav-bar {
+            padding: 15px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .back-btn {
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--accent);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>NYXORA STREAMING</h1>
-    <p>Premium Content Platform</p>
-</header>
+<div class="header">
+    <h1 style="color: var(--accent); margin:0;">NYXORA</h1>
+    <small>Secure Streaming Engine</small>
+</div>
 
-<div class="container" id="movie-grid">
+<div class="container" id="content-grid">
     </div>
 
-<div id="player-modal">
-    <div class="player-box">
-        <span class="close-btn" onclick="closePlayer()">&times;</span>
-        <iframe id="main-player" src="" width="100%" height="450px" frameborder="0" referrerpolicy="no-referrer" allowfullscreen></iframe>
+<div id="video-overlay">
+    <div class="nav-bar">
+        <span class="back-btn" onclick="closePlayer()">⬅ ফিরে যান</span>
+        <span id="video-title">প্লেয়িং ভিডিও...</span>
     </div>
+    <iframe id="player-frame" src="" allowfullscreen referrerpolicy="no-referrer"></iframe>
 </div>
 
 <script>
-    // আপনার দেওয়া সেই JSON ডেটা (স্যাম্পল হিসেবে কিছু ক্যাটেগরি)
-    const categories = [
+    // আপনার দেওয়া সেই ক্যাটেগরি ডাটা
+    const data = [
         {
             "title":"3d animated",
-            "url":"https://www.xvideos.com/embedframe/56234551", // এখানে এমবেড লিঙ্ক ব্যবহার করতে হবে
+            "url":"https://www.xvideos.com/embedframe/56234551", 
             "img_url":"https://di.phncdn.com/is-static/images/categories/(m=qP_356TbeqM48zjadOf)(mh=6MEf_XdyKLkUvnb9)roku_86.jpg"
         },
         {
             "title":"Indian",
-            "url":"https://www.xvideos.com/embedframe/67891234",
+            "url":"https://www.xvideos.com/embedframe/11223344",
             "img_url":"https://di.phncdn.com/is-static/images/categories/(m=qOW556TbeqM48zjadOf)(mh=X9NmtOo05qEEJWyn)roku_101.jpg"
         },
         {
             "title":"Hentai",
-            "url":"https://www.xvideos.com/embedframe/11223344",
+            "url":"https://www.xvideos.com/embedframe/22334455",
             "img_url":"https://di.phncdn.com/is-static/images/categories/(m=q5V556TbeqM48zjadOf)(mh=T50h9WANdRlW_vU0)roku_36.jpg"
         }
+        // আপনি চাইলে এখানে আরও আইটেম যোগ করতে পারেন...
     ];
 
-    const grid = document.getElementById('movie-grid');
+    const grid = document.getElementById('content-grid');
 
-    // মুভি কার্ড তৈরি করা
-    categories.forEach(item => {
+    data.forEach(item => {
+        // ইমেজ প্রক্সি ব্যবহার করছি যাতে ব্লক না হয়
+        const secureImg = "https://images.weserv.nl/?url=" + encodeURIComponent(item.img_url);
+        
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-            <img src="${item.img_url}" alt="${item.title}">
-            <div class="card-body">
-                <div class="card-title">${item.title}</div>
-            </div>
+            <img src="${secureImg}" loading="lazy" alt="${item.title}">
+            <div class="card-info">${item.title}</div>
         `;
-        card.onclick = () => openPlayer(item.url);
+        card.onclick = () => openPlayer(item.url, item.title);
         grid.appendChild(card);
     });
 
-    function openPlayer(url) {
-        document.getElementById('main-player').src = url;
-        document.getElementById('player-modal').style.display = 'flex';
+    function openPlayer(url, title) {
+        const overlay = document.getElementById('video-overlay');
+        const frame = document.getElementById('player-frame');
+        document.getElementById('video-title').innerText = "চলছে: " + title;
+        
+        frame.src = url;
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // মেইন পেজ স্ক্রল বন্ধ
     }
 
     function closePlayer() {
-        document.getElementById('player-modal').style.display = 'none';
-        document.getElementById('main-player').src = '';
+        const overlay = document.getElementById('video-overlay');
+        const frame = document.getElementById('player-frame');
+        
+        overlay.style.display = 'none';
+        frame.src = ''; // ভিডিও বন্ধ করা
+        document.body.style.overflow = 'auto';
     }
 </script>
 
