@@ -4,64 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>Nyxora v2.0 - Auto Engine</title>
+    <title>Nyxora Premium - xMaster</title>
     <style>
-        :root { --accent: #38bdf8; --bg: #020617; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 10px; }
-        .header { text-align: center; padding: 15px; border-bottom: 2px solid var(--accent); }
-        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 10px; }
-        .card { background: rgba(255,255,255,0.05); border-radius: 8px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
-        .card img { width: 100%; height: 180px; object-fit: cover; background: #000; }
-        .card-title { padding: 8px; text-align: center; font-size: 12px; font-weight: bold; }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999; flex-direction: column; }
-        .nav { padding: 10px; background: #111; display: flex; align-items: center; border-bottom: 1px solid var(--accent); }
+        :root { --accent: #ff0000; --bg: #0b0b0b; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; }
+        .header { padding: 20px; text-align: center; border-bottom: 2px solid var(--accent); background: #1a1a1a; }
+        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 20px; }
+        .card { background: #222; border-radius: 8px; overflow: hidden; cursor: pointer; border: 1px solid #333; transition: 0.3s; }
+        .card:hover { border-color: var(--accent); transform: scale(1.05); }
+        .card img { width: 100%; height: 120px; object-fit: cover; background: #000; }
+        .card-title { padding: 10px; font-size: 13px; text-align: center; font-weight: bold; }
+        /* Player Overlay */
+        #video-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; }
+        .top-bar { padding: 15px; background: #1a1a1a; display: flex; align-items: center; }
+        .close-btn { background: var(--accent); color: white; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; }
         iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2 style="margin:0;">NYXORA ENGINE</h2>
-    <small>Auto Content Loader</small>
+    <h1 style="margin:0; color:var(--accent);">NYXORA X-MASTER</h1>
+    <p style="font-size:12px; opacity:0.6;">High Speed Streaming Engine</p>
 </div>
 
-<div class="container" id="video-grid"></div>
+<div class="container" id="video-grid">
+    </div>
 
-<div id="overlay">
-    <div class="nav"><button onclick="closePlayer()" style="background:var(--accent); border:none; padding:5px 15px; border-radius:5px;">বন্ধ করুন</button></div>
-    <iframe id="player" src="" allowfullscreen></iframe>
+<div id="video-container">
+    <div class="top-bar">
+        <button class="close-btn" onclick="closeVideo()">বন্ধ করুন</button>
+        <span id="now-playing" style="margin-left:15px; font-size:14px;"></span>
+    </div>
+    <iframe id="video-player" src="" allowfullscreen></iframe>
 </div>
 
 <script>
-    // আপনাকে শুধু এখানে ভিডিওর টাইটেল আর আইডি দিতে হবে
-    const myVideos = [
-        { title: "3D Animation", id: "56234551" },
-        { title: "Asian Clip", id: "12345678" },
-        { title: "Indian Special", id: "67891234" }
+    // এখানে আপনার ভিডিওর লিস্ট (ID এবং টাইটেল)
+    const videoList = [
+        { 
+            title: "Anale Avonturen", 
+            id: "xhyda51", // আপনার দেওয়া লিঙ্ক থেকে আইডি
+            thumb: "https://sv.xhcdn.com/key=12345/size=400x300/video/xhyda51.jpg" // স্যাম্পল থাম্বনেইল
+        }
     ];
 
     const grid = document.getElementById('video-grid');
 
-    myVideos.forEach(v => {
-        // ওদের পদ্ধতি: আইডি থেকে সরাসরি থাম্বনেইল জেনারেট করা
-        const firstThree = v.id.substring(0, 3);
-        const thumbUrl = `https://img-egc.xvideos-cdn.com/videos/thumbs169ll/${firstThree}/${v.id}/thumb.jpg`;
-        const proxyThumb = "https://images.weserv.nl/?url=" + encodeURIComponent(thumbUrl);
-
+    videoList.forEach(video => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `<img src="${proxyThumb}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Thumb'"><div class="card-title">${v.title}</div>`;
-        card.onclick = () => {
-            document.getElementById('player').src = `https://www.xvideos.com/embedframe/${v.id}`;
-            document.getElementById('overlay').style.display = 'flex';
-        };
+        // xHamster এর থাম্বনেইল ব্লক হওয়া ঠেকাতে আমরা প্রক্সি ব্যবহার করছি না কারণ এরা সরাসরি এমবেড থাম্বনেইল দেয়
+        card.innerHTML = `
+            <img src="${video.thumb}" onerror="this.src='https://via.placeholder.com/400x300?text=Video+Ready'">
+            <div class="card-title">${video.title}</div>
+        `;
+        card.onclick = () => playVideo(video.id, video.title);
         grid.appendChild(card);
     });
 
-    function closePlayer() {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('player').src = '';
+    function playVideo(id, title) {
+        const overlay = document.getElementById('video-container');
+        const iframe = document.getElementById('video-player');
+        
+        // xHamster Embed Format
+        iframe.src = `https://nl.xhamster.com/embed/${id}`;
+        
+        document.getElementById('now-playing').innerText = "চলছে: " + title;
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeVideo() {
+        document.getElementById('video-container').style.display = 'none';
+        document.getElementById('video-player').src = '';
+        document.body.style.overflow = 'auto';
     }
 </script>
+
 </body>
 </html>
