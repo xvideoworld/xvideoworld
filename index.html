@@ -1,335 +1,150 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="bn">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style type="text/css">
-        body { margin: 0; background: #000; overflow: hidden; font-family: "Arial", sans-serif; }
-                iframe {
-                    display: block;
-                    background: #000;
-                    border: none;
-                    height: 100vh;
-                    width: 100vw;
-                    position: relative;
-                    pointer-events: none; /* Let the overlay catch clicks */
-                }
-
-                /* Transparent overlay to catch clicks for the inactivity timer */
-                #click-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100vw;
-                    height: 100vh;
-                    z-index: 5;
-                }
-
-                /* Play & Reload Buttons */
-                .play-btn, .reload-btn {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 120px;
-                    height: 120px;
-                    border-radius: 50%;
-                    background-color: rgba(1, 163, 248, 0.75);
-                    color: white;
-                    font-size: 48px;
-                    text-align: center;
-                    line-height: 120px;
-                    cursor: pointer;
-                    display: none;
-                    z-index: 10;
-                    padding: 10px;
-                    box-sizing: border-box;
-                    transition: opacity 0.3s;
-                }
-
-                /* Bottom Controls Container */
-                #controls-container {
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 100vw;
-                    box-sizing: border-box;
-                    padding: 30px 20px 20px 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-                    color: white;
-                    z-index: 20;
-                    opacity: 0; /* Hidden by default */
-                    transition: opacity 0.4s ease-in-out;
-                }
-
-                .time-text {
-                    font-size: 14px;
-                    font-weight: bold;
-                    min-width: 45px;
-                    text-align: center;
-                    text-shadow: 1px 1px 2px black;
-                }
-
-                /* Custom Beautiful Slider */
-                input[type=range] {
-                    -webkit-appearance: none;
-                    width: 100%;
-                    margin: 0 15px;
-                    background: transparent; /* Default background of the input itself */
-                    cursor: pointer;
-                }
-
-                input[type=range]:focus {
-                    outline: none;
-                }
-
-                /* Track */
-                input[type=range]::-webkit-slider-runnable-track {
-                    width: 100%;
-                    height: 6px;
-                    cursor: pointer;
-                    background: transparent; /* Make track transparent so input's background can show gradient */
-                    border-radius: 3px;
-                }
-
-                /* Thumb (The dot) */
-                input[type=range]::-webkit-slider-thumb {
-                    height: 18px;
-                    width: 18px;
-                    border-radius: 50%;
-                    background: #01A3F8; /* Accent Blue */
-                    cursor: pointer;
-                    -webkit-appearance: none;
-                    margin-top: -6px; /* Center thumb on track */
-                    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-                }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer"> <title>Nyxora Premium Streaming</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.2);
+        }
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+        h1 {
+            color: #38bdf8;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: #38bdf8;
+        }
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 15px;
+            text-align: center;
+        }
+        .card-title {
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+        /* ভিডিও প্লেয়ার পপআপ */
+        #player-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .player-box {
+            width: 80%;
+            max-width: 800px;
+            background: #000;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: -40px; right: 0;
+            color: white; font-size: 30px; cursor: pointer;
+        }
     </style>
 </head>
-
 <body>
-<div id="player"></div>
 
-<!-- Transparent overlay to catch user taps/clicks -->
-<div id="click-overlay"></div>
+<header>
+    <h1>NYXORA STREAMING</h1>
+    <p>Premium Content Platform</p>
+</header>
 
-<!-- Play Button -->
-<div class="play-btn" id="playBtn">&#9654;</div>
+<div class="container" id="movie-grid">
+    </div>
 
-<!-- Reload Button -->
-<div class="reload-btn" id="reloadBtn">&#8635;</div>
-
-<!-- Progress Bar Controls -->
-<div id="controls-container">
-    <span class="time-text" id="current-time">0:00</span>
-    <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
-    <span class="time-text" id="total-time">0:00</span>
+<div id="player-modal">
+    <div class="player-box">
+        <span class="close-btn" onclick="closePlayer()">&times;</span>
+        <iframe id="main-player" src="" width="100%" height="450px" frameborder="0" referrerpolicy="no-referrer" allowfullscreen></iframe>
+    </div>
 </div>
 
 <script>
-    // Load YouTube API
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    var player;
-    var done = false;
-    var progressInterval;
-    var isDragging = false;
-    var hideTimeout;
-
-    // UI Elements
-    const progressBar = document.getElementById('progress-bar');
-    const currentTimeText = document.getElementById('current-time');
-    const totalTimeText = document.getElementById('total-time');
-    const controlsContainer = document.getElementById('controls-container');
-    const clickOverlay = document.getElementById('click-overlay');
-    const playBtn = document.getElementById('playBtn');
-    const reloadBtn = document.getElementById('reloadBtn');
-
-    function onYouTubeIframeAPIReady() {
-        const params = new URL(location.href).searchParams;
-        const idd = "INJECT_VIDEO_ID_HERE";
-        //const idd = params.get('link') || 'aqz-KE-bpKQ'; // Fallback video ID
-
-        player = new YT.Player('player', {
-            height: '100%',
-            width: '100%',
-            videoId: idd,
-            playerVars: {
-                'playsinline': 1,
-                'autoplay': 1,
-                'controls': 0,         // Hide native controls
-                'disablekb': 1,        // Disable keyboard to prevent focus issues
-                'modestbranding': 1,
-                'iv_load_policy': 3,
-                'showinfo': 0,
-                'rel': 0,
-                'enablejsapi': 1,       // Required for API control
-                'origin': 'https://localhost', // MATCH to BaseURL in Java
-                'widget_referrer': 'https://localhost' // Match BaseURL
-            },
-            events: {
-                'onReady': onPlayerReady,
-                'onStateChange': onPlayerStateChange
-            }
-        });
-    }
-
-    function onPlayerReady(event) {
-        event.target.playVideo();
-        wakeUpControls(); // Show controls initially
-        // Initialize slider background immediately on ready
-        updateSliderBackground(progressBar);
-    }
-
-    function onPlayerStateChange(event) {
-        var duration = player.getDuration();
-
-        if (event.data == YT.PlayerState.PLAYING) {
-            hideReloadButton();
-            hidePlayButton();
-            startProgressSync();
-            wakeUpControls();
-
-            clearInterval(window.endCheckInterval);
-            window.endCheckInterval = setInterval(function() {
-                if (player.getCurrentTime() && duration > 0 && (duration - player.getCurrentTime() <= 3)) { // Added duration > 0 check
-                    player.pauseVideo();
-                    showReloadButton();
-                    clearInterval(window.endCheckInterval);
-                }
-            }, 500);
-
-        } else if (event.data == YT.PlayerState.PAUSED) {
-            hideReloadButton();
-            showPlayButton();
-            stopProgressSync();
-            wakeUpControls(); // Keep controls visible when paused
-        } else if (event.data == YT.PlayerState.ENDED) {
-            showReloadButton();
-            hidePlayButton();
-            stopProgressSync();
-            wakeUpControls();
-        } else if (event.data == YT.PlayerState.BUFFERING) { // Add buffering state
-            wakeUpControls(); // Keep controls visible during buffering
+    // আপনার দেওয়া সেই JSON ডেটা (স্যাম্পল হিসেবে কিছু ক্যাটেগরি)
+    const categories = [
+        {
+            "title":"3d animated",
+            "url":"https://www.xvideos.com/embedframe/56234551", // এখানে এমবেড লিঙ্ক ব্যবহার করতে হবে
+            "img_url":"https://di.phncdn.com/is-static/images/categories/(m=qP_356TbeqM48zjadOf)(mh=6MEf_XdyKLkUvnb9)roku_86.jpg"
+        },
+        {
+            "title":"Indian",
+            "url":"https://www.xvideos.com/embedframe/67891234",
+            "img_url":"https://di.phncdn.com/is-static/images/categories/(m=qOW556TbeqM48zjadOf)(mh=X9NmtOo05qEEJWyn)roku_101.jpg"
+        },
+        {
+            "title":"Hentai",
+            "url":"https://www.xvideos.com/embedframe/11223344",
+            "img_url":"https://di.phncdn.com/is-static/images/categories/(m=q5V556TbeqM48zjadOf)(mh=T50h9WANdRlW_vU0)roku_36.jpg"
         }
-    }
+    ];
 
-    // --- PROGRESS BAR LOGIC ---
+    const grid = document.getElementById('movie-grid');
 
-    // Format time in seconds to M:SS or H:MM:SS
-    function formatTime(time) {
-        if (isNaN(time) || time < 0) return "0:00"; // Handle negative or NaN times
-        const hours = Math.floor(time / 3600);
-        const minutes = Math.floor((time % 3600) / 60);
-        const seconds = Math.floor(time % 60);
-
-        if (hours > 0) {
-            return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    // Update the blue fill of the slider track
-    function updateSliderBackground(slider) {
-        const percentage = (slider.value / slider.max) * 100;
-        // Changed background to input element itself
-        slider.style.background = `linear-gradient(to right, #01A3F8 ${percentage}%, #555 ${percentage}%)`;
-    }
-
-    function startProgressSync() {
-        clearInterval(progressInterval);
-        progressInterval = setInterval(() => {
-            if (!isDragging && player && player.getCurrentTime && player.getDuration) {
-                const currTime = player.getCurrentTime();
-                const duration = player.getDuration();
-
-                progressBar.max = duration;
-                progressBar.value = currTime;
-
-                currentTimeText.innerText = formatTime(currTime);
-                totalTimeText.innerText = formatTime(duration);
-
-                updateSliderBackground(progressBar);
-            }
-        }, 250); // Update every 250ms for smoother progress
-    }
-
-    function stopProgressSync() {
-        clearInterval(progressInterval);
-    }
-
-    // Slider interaction events
-    progressBar.addEventListener('input', function() {
-        isDragging = true;
-        wakeUpControls();
-        currentTimeText.innerText = formatTime(this.value);
-        updateSliderBackground(this);
+    // মুভি কার্ড তৈরি করা
+    categories.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <img src="${item.img_url}" alt="${item.title}">
+            <div class="card-body">
+                <div class="card-title">${item.title}</div>
+            </div>
+        `;
+        card.onclick = () => openPlayer(item.url);
+        grid.appendChild(card);
     });
 
-    progressBar.addEventListener('change', function() {
-        player.seekTo(this.value, true);
-        isDragging = false;
-        wakeUpControls(); // Keep controls visible after seeking
-    });
-
-    // --- INACTIVITY TIMER & OVERLAY LOGIC ---
-
-    function wakeUpControls() {
-        controlsContainer.style.opacity = "1";
-
-        // Reset the timer
-        clearTimeout(hideTimeout);
-
-        // Set a new timer to hide after 5 seconds ONLY if playing
-        hideTimeout = setTimeout(() => {
-            if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
-                controlsContainer.style.opacity = "0";
-            }
-        }, 5000);
+    function openPlayer(url) {
+        document.getElementById('main-player').src = url;
+        document.getElementById('player-modal').style.display = 'flex';
     }
 
-    // Tap/Click on the video overlay
-    clickOverlay.addEventListener('click', function() {
-        // If controls are hidden, just show them
-        if (controlsContainer.style.opacity === "0") {
-            wakeUpControls();
-        } else {
-            // If controls are already visible, toggle play/pause
-            if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
-            }
-            wakeUpControls();
-        }
-    });
-
-    // Keep controls awake on mouse move over the overlay
-    clickOverlay.addEventListener('mousemove', wakeUpControls);
-    controlsContainer.addEventListener('mousemove', wakeUpControls);
-    controlsContainer.addEventListener('touchstart', wakeUpControls);
-
-    // --- BUTTON ACTIONS ---
-
-    function showReloadButton() { reloadBtn.style.display = 'block'; }
-    function hideReloadButton() { reloadBtn.style.display = 'none'; }
-    function showPlayButton() { playBtn.style.display = 'block'; }
-    function hidePlayButton() { playBtn.style.display = 'none'; }
-
-    reloadBtn.addEventListener('click', function() {
-        player.seekTo(0, true);
-        player.playVideo();
-    });
-
-    playBtn.addEventListener('click', function() {
-        player.playVideo();
-    });
+    function closePlayer() {
+        document.getElementById('player-modal').style.display = 'none';
+        document.getElementById('main-player').src = '';
+    }
 </script>
-</body>
 
+</body>
 </html>
