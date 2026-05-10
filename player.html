@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playing Movie - Nyxora</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <style>
+        body { background: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .container { width: 100%; max-width: 900px; }
+        /* ইউটিউব লোগো এবং লিঙ্ক ব্লক করার জন্য CSS */
+        .plyr__video-embed iframe { transform: scale(1.4); } 
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+</div>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script>
+    // URL থেকে ভিডিও আইডি নেওয়ার স্ক্রিপ্ট
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('id');
+    
+    const playerElement = document.getElementById('player');
+    playerElement.setAttribute('data-plyr-embed-id', videoId);
+
+    // প্লেয়ার সেটিংস (লোগো এবং ইউটিউব কন্ট্রোল হাইড করার জন্য)
+    const player = new Plyr('#player', {
+        fullscreen: { enabled: true, fallback: true, iosNative: true },
+        youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
+    });
+</script>
+
+</body>
+</html>
