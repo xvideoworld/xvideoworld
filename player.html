@@ -3,36 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playing Movie - Nyxora</title>
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <title>Playing Now - Nyxora</title>
     <style>
-        body { background: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .container { width: 100%; max-width: 900px; }
-        /* ইউটিউব লোগো এবং লিঙ্ক ব্লক করার জন্য CSS */
-        .plyr__video-embed iframe { transform: scale(1.4); } 
+        body { background: #000; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        /* লোগো হাইড করার জন্য মাস্ক কন্টেইনার */
+        .video-mask {
+            position: relative;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 Aspect Ratio */
+            max-height: 100vh;
+            max-width: 177.78vh;
+            overflow: hidden; /* এর বাইরের সব অংশ কেটে যাবে */
+            background: #000;
+        }
+
+        /* ইউটিউব ভিডিওটি জুম করে লোগো লুকিয়ে রাখা */
+        .video-mask iframe {
+            position: absolute;
+            top: -10%; /* উপরের টাইটেল হাইড করতে */
+            left: -5%; /* বাম পাশের অংশ হাইড করতে */
+            width: 110%; /* ৫% + ৫% বাড়িয়ে দেওয়া হয়েছে */
+            height: 120%; /* ১০% + ১০% বাড়িয়ে দেওয়া হয়েছে */
+            pointer-events: auto;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px; left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            z-index: 100;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
-</div>
+    <a href="index.html" class="back-btn">← ফিরে যান</a>
 
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-<script>
-    // URL থেকে ভিডিও আইডি নেওয়ার স্ক্রিপ্ট
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoId = urlParams.get('id');
-    
-    const playerElement = document.getElementById('player');
-    playerElement.setAttribute('data-plyr-embed-id', videoId);
+    <div class="video-mask">
+        <iframe id="main-player" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
 
-    // প্লেয়ার সেটিংস (লোগো এবং ইউটিউব কন্ট্রোল হাইড করার জন্য)
-    const player = new Plyr('#player', {
-        fullscreen: { enabled: true, fallback: true, iosNative: true },
-        youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
-    });
-</script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('id');
+        // ইউটিউব প্যারামিটার যাতে লোগো ও কন্ট্রোল কম আসে
+        const playerUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&controls=1&disablekb=1`;
+        document.getElementById('main-player').src = playerUrl;
+    </script>
 
 </body>
 </html>
