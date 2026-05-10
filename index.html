@@ -3,148 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nyxora Premium - Movies</title>
+    <title>Nyxora Premium</title>
     <style>
-        /* ডার্ক থিম এবং গ্লাস মরফিজম ডিজাইন */
-        body {
-            background-color: #020617;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #38bdf8;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .movie-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .movie-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid #334155;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-5px);
-            border-color: #38bdf8;
-        }
-
-        /* ইউটিউব লোগো এবং নাম ঢাকার টেকনিক */
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: -10%; /* উপরে ইউটিউব টাইটেল বার ঢাকার জন্য */
-            left: 0;
-            width: 100%;
-            height: 120%; /* বড় করা হয়েছে যাতে লোগো হাইড হয় */
-            border: none;
-        }
-
-        .overlay-brand {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            background: linear-gradient(to bottom, #020617, transparent);
-            z-index: 5;
-            padding: 5px 15px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #38bdf8;
-            pointer-events: none;
-        }
-
-        .movie-info {
-            padding: 15px;
-        }
-
-        .movie-title {
-            font-size: 18px;
-            margin: 0 0 10px 0;
-            color: #f1f5f9;
-        }
-
-        .badge {
-            background: #38bdf8;
-            color: #020617;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+        body { background: #020617; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+        .card { cursor: pointer; background: #1e293b; border-radius: 10px; overflow: hidden; transition: 0.3s; border: 1px solid #334155; }
+        .card:hover { transform: scale(1.05); border-color: #38bdf8; }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
+        .card h3 { font-size: 14px; padding: 10px; margin: 0; }
+        a { text-decoration: none; color: inherit; }
     </style>
 </head>
 <body>
-
-    <h1>NYXORA PREMIUM</h1>
-    <div class="movie-grid">
-
-        <div class="movie-card">
-            <div class="video-container">
-                <div class="overlay-brand">NYXORA ORIGINAL</div>
-                <iframe src="https://www.youtube-nocookie.com/embed/VDFys9V9poQ?modestbranding=1&rel=0&showinfo=0&controls=1"></iframe>
+    <h1 style="color:#38bdf8">NYXORA PREMIUM</h1>
+    <div class="grid">
+        <a href="player.html?id=VDFys9V9poQ">
+            <div class="card">
+                <img src="https://img.youtube.com/vi/VDFys9V9poQ/mqdefault.jpg">
+                <h3>Extra Ordinary Man</h3>
             </div>
-            <div class="movie-info">
-                <p class="badge">Hindi Dubbed</p>
-                <h3 class="movie-title">Extra Ordinary Man (2025)</h3>
+        </a>
+        <a href="player.html?id=C68KgRrBA3E">
+            <div class="card">
+                <img src="https://img.youtube.com/vi/C68KgRrBA3E/mqdefault.jpg">
+                <h3>International Rowdy</h3>
             </div>
-        </div>
-
-        <div class="movie-card">
-            <div class="video-container">
-                <div class="overlay-brand">NYXORA ORIGINAL</div>
-                <iframe src="https://www.youtube-nocookie.com/embed/C68KgRrBA3E?modestbranding=1&rel=0&controls=1"></iframe>
+        </a>
+        <a href="player.html?id=KisWT0uKLdY">
+            <div class="card">
+                <img src="https://img.youtube.com/vi/KisWT0uKLdY/mqdefault.jpg">
+                <h3>Toxic Full Movie</h3>
             </div>
-            <div class="movie-info">
-                <p class="badge">Action Thriller</p>
-                <h3 class="movie-title">International Rowdy (2026)</h3>
+        </a>
+        <a href="player.html?id=Rn2Zsrrp7JM">
+            <div class="card">
+                <img src="https://img.youtube.com/vi/Rn2Zsrrp7JM/mqdefault.jpg">
+                <h3>Vijay CM (Bigil)</h3>
             </div>
-        </div>
-
-        <div class="movie-card">
-            <div class="video-container">
-                <div class="overlay-brand">NYXORA ORIGINAL</div>
-                <iframe src="https://www.youtube-nocookie.com/embed/KisWT0uKLdY?modestbranding=1&rel=0&controls=1"></iframe>
-            </div>
-            <div class="movie-info">
-                <p class="badge">South Action</p>
-                <h3 class="movie-title">Toxic - Full Movie HD</h3>
-            </div>
-        </div>
-
-        <div class="movie-card">
-            <div class="video-container">
-                <div class="overlay-brand">NYXORA ORIGINAL</div>
-                <iframe src="https://www.youtube-nocookie.com/embed/Rn2Zsrrp7JM?modestbranding=1&rel=0&controls=1"></iframe>
-            </div>
-            <div class="movie-info">
-                <p class="badge">New Release</p>
-                <h3 class="movie-title">Vijay CM (Bigil) Hindi Dubbed</h3>
-            </div>
-        </div>
-
+        </a>
     </div>
-
 </body>
 </html>
