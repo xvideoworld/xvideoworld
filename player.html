@@ -3,82 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nyxora Premium Player</title>
+    <title>Nyxora Premium</title>
     <style>
-        body { background: #000; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: sans-serif; }
+        body { background: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         
-        /* মেইন কন্টেইনার */
-        .player-wrapper {
+        .container {
             position: relative;
-            width: 100vw;
-            height: 56.25vw; /* 16:9 Ratio */
-            max-width: 100%;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
             overflow: hidden;
         }
 
-        /* ইউটিউব ফ্রেমকে জুম করে লোগো বাইরে পাঠিয়ে দেওয়া */
+        /* ভিডিওটিকে অনেক বেশি জুম করা হয়েছে যাতে লোগো স্ক্রিনের বাইরে চলে যায় */
         iframe {
             position: absolute;
-            top: -15%; /* উপরে নাম ঢাকার জন্য */
-            left: -5%;
-            width: 110%; /* ৫% জুম */
-            height: 130%; /* লোগো নিচে নামিয়ে দেওয়ার জন্য */
+            top: -20%; /* উপরের টাইটেল বার ঢাকার জন্য */
+            left: -10%; /* পাশের লোগো ঢাকার জন্য */
+            width: 120%; /* জুম বাড়িয়ে দেওয়া হয়েছে */
+            height: 140%; 
             border: none;
+            pointer-events: none; /* যাতে কেউ ইউটিউব লোগোতে ক্লিক করতে না পারে */
         }
 
-        /* ইনভিজিবল প্রোটেকশন লেয়ার - ইউটিউব লোগো বা লিঙ্কে ক্লিক আটকাবে */
-        .click-blocker {
+        /* তোমার নিজস্ব কন্ট্রোল লেয়ার */
+        .overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 10;
-            background: transparent;
+            background: rgba(0,0,0,0); /* একদম স্বচ্ছ */
         }
-
-        /* কাস্টম কন্ট্রোল (আপনার নিজের লোগো বা নাম এখানে দিতে পারেন) */
-        .custom-ui {
+        
+        .brand-name {
             position: absolute;
             bottom: 20px;
-            left: 20px;
+            right: 20px;
+            color: #38bdf8;
+            font-weight: bold;
             z-index: 20;
-            pointer-events: none;
-        }
-
-        .back-btn {
-            position: absolute;
-            top: 20px; left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            text-decoration: none;
-            z-index: 100;
-            backdrop-filter: blur(5px);
+            font-family: sans-serif;
         }
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="back-btn">← ব্যাকে যান</a>
-
-    <div class="player-wrapper">
-        <iframe id="video-frame" src="" allow="autoplay; encrypted-media; fullscreen"></iframe>
-        
-        <div class="click-blocker"></div>
-        
-        <div class="custom-ui">
-            <h2 style="color: #38bdf8; text-shadow: 2px 2px 5px black;">NYXORA HD</h2>
-        </div>
+    <div class="container">
+        <iframe id="vid" src="" allow="autoplay"></iframe>
+        <div class="overlay"></div>
+        <div class="brand-name">NYXORA HD</div>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
-        
-        // সব ইউটিউব লোগো প্যারামিটার অফ করা হয়েছে
-        const playerUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1`;
-        
-        document.getElementById('video-frame').src = playerUrl;
+        // সব ধরনের কন্ট্রোল এবং লোগো প্যারামিটার অফ করার চেষ্টা
+        document.getElementById('vid').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1`;
     </script>
 
 </body>
