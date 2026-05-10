@@ -3,63 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nyxora Premium</title>
+    <title>প্লে হচ্ছে...</title>
     <style>
-        body { background: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        
-        .container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
-        }
-
-        /* ভিডিওটিকে অনেক বেশি জুম করা হয়েছে যাতে লোগো স্ক্রিনের বাইরে চলে যায় */
-        iframe {
-            position: absolute;
-            top: -20%; /* উপরের টাইটেল বার ঢাকার জন্য */
-            left: -10%; /* পাশের লোগো ঢাকার জন্য */
-            width: 120%; /* জুম বাড়িয়ে দেওয়া হয়েছে */
-            height: 140%; 
-            border: none;
-            pointer-events: none; /* যাতে কেউ ইউটিউব লোগোতে ক্লিক করতে না পারে */
-        }
-
-        /* তোমার নিজস্ব কন্ট্রোল লেয়ার */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 10;
-            background: rgba(0,0,0,0); /* একদম স্বচ্ছ */
-        }
-        
-        .brand-name {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            color: #38bdf8;
-            font-weight: bold;
-            z-index: 20;
-            font-family: sans-serif;
-        }
+        body { background-color: #000; color: white; margin: 0; font-family: Arial, sans-serif; }
+        .player-container { width: 100%; position: relative; padding-top: 56.25%; background: #000; }
+        .player-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-title { padding: 15px; font-size: 18px; border-bottom: 1px solid #333; }
+        .back-btn { display: inline-block; padding: 10px 15px; color: #ff0000; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <iframe id="vid" src="" allow="autoplay"></iframe>
-        <div class="overlay"></div>
-        <div class="brand-name">NYXORA HD</div>
+<a href="index.html" class="back-btn">← ফিরে যান</a>
+
+<div class="player-container" id="player">
     </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('id');
-        // সব ধরনের কন্ট্রোল এবং লোগো প্যারামিটার অফ করার চেষ্টা
-        document.getElementById('vid').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1`;
-    </script>
+<div class="video-title" id="vTitle">ভিডিওর নাম</div>
 
+<script>
+    // ইউআরএল থেকে ভিডিওর ডাটা বের করা
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get('vid');
+    const videoTitle = urlParams.get('title');
+
+    if(videoUrl) {
+        document.getElementById('player').innerHTML = `<iframe src="${videoUrl}" allowfullscreen></iframe>`;
+        document.getElementById('vTitle').innerText = videoTitle;
+        document.title = videoTitle;
+    }
+</script>
 </body>
 </html>
