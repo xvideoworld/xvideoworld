@@ -3,59 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মুভি গ্যালারি - ইউটিউব লেআউট</title>
+    <title>ভিডিও প্ল্যাটফর্ম - হোম</title>
     <style>
-        body { background-color: #0f0f0f; color: white; font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        header { padding: 15px; border-bottom: 1px solid #333; position: sticky; top: 0; background: #0f0f0f; z-index: 100; }
-        
-        /* এক লাইনে একটা বড় ভিডিওর স্টাইল */
-        .video-container { width: 100%; display: flex; flex-direction: column; gap: 20px; padding-bottom: 20px; }
-        .video-card { text-decoration: none; color: white; width: 100%; }
-        
-        .thumb-box { position: relative; width: 100%; padding-top: 56.25%; background: #222; }
-        .thumb-box img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        
-        .video-details { padding: 12px; display: flex; gap: 12px; }
-        .video-details h3 { margin: 0; font-size: 16px; font-weight: normal; line-height: 1.4; }
-        
-        /* ৪জিবি র‍্যামে যাতে ল্যাগ না করে তাই হালকা এনিমেশন */
-        .video-card:active { background: #222; }
+        /* মূল ডিজাইন (ইউটিউব ডার্ক থিম) */
+        body {
+            background-color: #0f0f0f;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #0f0f0f;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 20px;
+            color: #ff0000;
+            margin: 0;
+        }
+
+        /* ভিডিও কন্টেইনার */
+        .main-content {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 10px;
+        }
+
+        /* ইউটিউব স্টাইল বড় ভিডিও কার্ড */
+        .video-card {
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* আইফ্রেম রেসপনসিভ করার নিয়ম (১৬:৯) */
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* ১৬:৯ রেশিও */
+        }
+
+        .iframe-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ভিডিওর নিচের তথ্য */
+        .video-info {
+            padding: 15px;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .video-meta {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* বাটন স্টাইল */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            background: #272727;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: #3f3f3f;
+        }
     </style>
 </head>
 <body>
 
-<header><strong>আমার মুভি কালেকশন</strong></header>
+    <header>
+        <h1>ভিডিও গ্যালারি</h1>
+    </header>
 
-<div class="video-container" id="videoGrid"></div>
-
-<script>
-    // আপনার সেই JSON ডাটা এখানে (সংক্ষেপে দেখাচ্ছি)
-    const movies = [
-        {"title":"3d animated", "url":"https://www.xvideos.com/embedframe/xhdDF2g", "img_url":"https://di.phncdn.com/is-static/images/categories/(m=qP_356TbeqM48zjadOf)(mh=6MEf_XdyKLkUvnb9)roku_86.jpg"},
-        {"title":"Amateur", "url":"https://www.xvideos.com/embedframe/xhdDF2g", "img_url":"https://ei.phncdn.com/is-static/images/categories/(m=qYR256TbeqM48zjadOf)(mh=IxMMDoS8KN1bzGlK)roku_3.jpg"}
-        // ... বাকি সব ডাটা এখানে একইভাবে বসবে
-    ];
-
-    const grid = document.getElementById('videoGrid');
-
-    movies.forEach(movie => {
-        const card = document.createElement('div');
-        card.className = 'video-card';
-        // এখানে ক্লিক করলে play.html এ যাবে এবং ভিডিও ইউআরএল প্যারামিটার হিসেবে পাঠাবে
-        card.onclick = () => {
-            window.location.href = `play.html?vid=${encodeURIComponent(movie.url)}&title=${encodeURIComponent(movie.title)}`;
-        };
-
-        card.innerHTML = `
-            <div class="thumb-box">
-                <img src="${movie.img_url}" loading="lazy">
+    <div class="main-content">
+        
+        <div class="video-card">
+            <div class="iframe-wrapper">
+                <iframe src="https://www.txnhh.com/embedframe/okludboa8da" scrolling="no" allowfullscreen></iframe>
             </div>
-            <div class="video-details">
-                <h3>${movie.title}</h3>
+            
+            <div class="video-info">
+                <div class="video-title">আপনার ভিডিওর নাম এখানে লিখুন</div>
+                <div class="video-meta">১২০কে ভিউ • ২ ঘণ্টা আগে</div>
+                
+                <div class="btn-group">
+                    <button class="action-btn">👍 লাইক</button>
+                    <button class="action-btn">↪️ শেয়ার</button>
+                    <button class="action-btn">⬇️ ডাউনলোড</button>
+                </div>
             </div>
-        `;
-        grid.appendChild(card);
-    });
-</script>
+        </div>
+        </div>
+
 </body>
 </html>
