@@ -3,36 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নিজস্ব প্লেয়ার - জাইয়ান</title>
+    <title>Zaiyan's Custom Player</title>
+    
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    
     <style>
-        body { background: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .player-container { width: 100%; max-width: 800px; padding: 10px; }
-        :root { --plyr-color-main: #ff0000; } /* প্লেয়ারের কালার লাল */
+        body {
+            background-color: #000;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .player-container {
+            width: 100%;
+            max-width: 900px;
+            padding: 10px;
+        }
+
+        /* ইউটিউব স্টাইল রেড কালার */
+        :root {
+            --plyr-color-main: #ff0000;
+        }
+
+        .video-info {
+            color: white;
+            padding: 15px 5px;
+            font-family: sans-serif;
+        }
     </style>
 </head>
 <body>
 
 <div class="player-container">
-    <video id="player" playsinline controls>
-        <source id="video-source" src="" type="video/mp4" />
-    </video>
+    <div class="video-wrapper">
+        <video id="player" playsinline controls>
+            <source src="https://www.txnhh.com/embedframe/okludboa8da" type="video/mp4" />
+        </video>
+    </div>
+
+    <div class="video-info">
+        <h3>ভিডিও টাইটেল - আপনার নিজস্ব প্লেয়ারে চলছে</h3>
+        <p>সার্ভার থেকে সরাসরি স্ট্রিম হচ্ছে...</p>
+    </div>
 </div>
 
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script>
-    const player = new Plyr('#player');
+    // প্লেয়ার সেটআপ
+    const player = new Plyr('#player', {
+        controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+        tooltips: { controls: true, seek: true }
+    });
 
-    // ভিডিওর আসল লিংক বের করার জন্য ফাংশন
-    // নোট: অনেক সাইট সরাসরি জাভাস্ক্রিপ্ট দিয়ে লিংক নিতে দেয় না (CORS Policy)
-    // সেক্ষেত্রে আপনাকে ম্যানুয়ালি একবার লিংক বের করে এখানে বসাতে হবে।
-    
-    const videoURL = "আপনার_বের_করা_সরাসরি_লিংক.mp4"; // এখানে ডিরেক্ট লিংকটি দিন
-    document.getElementById('video-source').src = videoURL;
-    player.source = {
-        type: 'video',
-        sources: [{ src: videoURL, type: 'video/mp4' }]
-    };
+    /* একটি টেকনিক্যাল নোট: 
+       যেহেতু ওই সাইটটি ডিরেক্ট MP4 লিংক সহজে দেয় না, 
+       তাই এই প্লেয়ারটি তখন কাজ করবে যখন আপনি ব্রাউজার থেকে ওই লিংকের আসল সোর্সটি পাবেন।
+    */
 </script>
 
 </body>
