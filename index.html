@@ -3,103 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নিজস্ব আইফ্রেম প্লেয়ার</title>
+    <title>নিজস্ব প্লেয়ার - জাইয়ান</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
-        body { background-color: #000; margin: 0; padding: 0; }
-
-        /* প্লেয়ারের মেইন বক্স */
-        .player-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 850px;
-            margin: 20px auto;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.8);
-        }
-
-        /* ১৬:৯ অনুপাত বজায় রাখা */
-        .video-container {
-            position: relative;
-            padding-top: 56.25%;
-        }
-
-        /* আসল আইফ্রেম (পেছনে থাকবে) */
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 1;
-        }
-
-        /* আপনার লোগো (ভিডিওর ওপর দেখাবে) */
-        .player-branding {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            pointer-events: none; /* যাতে ভিডিও প্লে করতে সমস্যা না হয় */
-        }
-
-        .logo-text {
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        /* ভিডিওর নিচের টাইটেল বক্স */
-        .info-section {
-            background: #111;
-            padding: 15px;
-            border-top: 2px solid #ff0000;
-        }
-
-        .info-section h2 {
-            margin: 0;
-            font-size: 18px;
-            color: #fff;
-            font-weight: 500;
-        }
-
-        /* মোবাইল স্ক্রিনের জন্য অ্যাডজাস্টমেন্ট */
-        @media (max-width: 480px) {
-            .logo-text { font-size: 12px; }
-            .info-section h2 { font-size: 15px; }
-        }
+        body { background: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .player-container { width: 100%; max-width: 800px; padding: 10px; }
+        :root { --plyr-color-main: #ff0000; } /* প্লেয়ারের কালার লাল */
     </style>
 </head>
 <body>
 
-    <div class="player-wrapper">
-        <div class="video-container">
-            <div class="player-branding">
-                <div class="logo-text">VOID PHANTOM PLAYER</div>
-            </div>
+<div class="player-container">
+    <video id="player" playsinline controls>
+        <source id="video-source" src="" type="video/mp4" />
+    </video>
+</div>
 
-            <iframe 
-                src="https://www.txnhh.com/embedframe/okludboa8da" 
-                frameborder="0" 
-                scrolling="no" 
-                allowfullscreen="allowfullscreen">
-            </iframe>
-        </div>
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+<script>
+    const player = new Plyr('#player');
 
-        <div class="info-section">
-            <h2>আপনার ভিডিওর নাম এখানে লিখুন</h2>
-            <p style="color: #666; font-size: 13px; margin-top: 5px;">পাওয়ারড বাই জাইয়ান (Void Phantom)</p>
-        </div>
-    </div>
+    // ভিডিওর আসল লিংক বের করার জন্য ফাংশন
+    // নোট: অনেক সাইট সরাসরি জাভাস্ক্রিপ্ট দিয়ে লিংক নিতে দেয় না (CORS Policy)
+    // সেক্ষেত্রে আপনাকে ম্যানুয়ালি একবার লিংক বের করে এখানে বসাতে হবে।
+    
+    const videoURL = "আপনার_বের_করা_সরাসরি_লিংক.mp4"; // এখানে ডিরেক্ট লিংকটি দিন
+    document.getElementById('video-source').src = videoURL;
+    player.source = {
+        type: 'video',
+        sources: [{ src: videoURL, type: 'video/mp4' }]
+    };
+</script>
 
 </body>
-    </html>
+</html>
