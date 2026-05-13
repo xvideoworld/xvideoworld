@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nyxora</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ─── RESET ─── */
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:#ffffff;
+  color:#111111;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:#f0f0f0; }
+::-webkit-scrollbar-thumb { background:#ddd; border-radius:8px; }
+
+button { font-family:inherit; cursor:pointer; border:none; outline:none; background:none; color:inherit; }
+input { font-family:inherit; outline:none; border:none; background:none; color:inherit; }
+a { color:inherit; text-decoration:none; }
+
+:root {
+  --red: #e63946;
+  --red-hover: #c92a35;
+  --red-soft: rgba(230,57,70,0.07);
+  --red-glow: rgba(230,57,70,0.20);
+  --text: #111111;
+  --text-soft: #555555;
+  --text-mute: #aaaaaa;
+  --border: #e8e8e8;
+  --border-light: #f0f0f0;
+  --card: #ffffff;
+  --card-bg: #ffffff;
+  --chip: #f5f5f5;
+  --shadow: 0 2px 20px rgba(0,0,0,0.04);
+  --shadow-hover: 0 12px 40px rgba(0,0,0,0.08);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --header-h: 70px;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeSlideUp {
+  from { opacity:0; transform:translateY(24px) scale(0.97); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+
+@keyframes scaleIn {
+  from { opacity:0; transform:scale(0.9) translateY(10px); }
+  to { opacity:1; transform:scale(1) translateY(0); }
+}
+
+@keyframes pulseRing {
+  0% { box-shadow:0 0 0 0 var(--red-glow); }
+  70% { box-shadow:0 0 0 10px transparent; }
+  100% { box-shadow:0 0 0 0 transparent; }
+}
+
+@keyframes slideInRight {
+  from { opacity:0; transform:translateX(30px); }
+  to { opacity:1; transform:translateX(0); }
+}
+
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-5px); }
+}
+
+@keyframes ripple {
+  to { width:300px; height:300px; opacity:0; }
+}
+
+/* ─── HEADER ─── */
+.header {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  height:var(--header-h);
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-light);
+  padding:0 24px;
+  display:flex; align-items:center;
+  transition:transform 0.4s ease, background 0.3s ease;
+}
+
+.header.hidden { transform:translateY(-100%); }
+
+.header-inner {
+  max-width:1200px; width:100%; margin:0 auto;
+  display:flex; align-items:center; gap:24px;
+}
+
+.logo {
+  display:flex; align-items:center; gap:10px;
+  animation:fadeSlideUp 0.6s ease both;
+}
+
+.logo-icon {
+  width:38px; height:38px;
+  background:var(--red);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:18px; font-weight:900;
+  animation:pulseRing 2s infinite;
+  position:relative;
+}
+
+.logo-text {
+  font-size:22px; font-weight:900;
+  letter-spacing:-0.8px;
+  background:linear-gradient(135deg,#111,#444);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.logo-text span { color:var(--red); background:none; -webkit-text-fill-color:var(--red); }
+
+/* Search */
+.search-wrap {
+  flex:1; max-width:420px; position:relative;
+  animation:fadeSlideUp 0.6s 0.05s ease both;
+}
+
+.search-wrap input {
+  width:100%;
+  padding:12px 50px 12px 20px;
+  background:var(--chip);
+  border:2px solid transparent;
+  border-radius:100px;
+  font-size:14px; color:var(--text);
+  transition:all 0.4s ease;
+}
+
+.search-wrap input:focus {
+  border-color:var(--red);
+  background:#fff;
+  box-shadow:0 0 0 6px var(--red-soft);
+}
+
+.search-wrap input::placeholder { color:var(--text-mute); }
+
+.search-wrap .srch-btn {
+  position:absolute; right:5px; top:50%;
+  transform:translateY(-50%);
+  width:38px; height:38px; border-radius:50%;
+  background:var(--red);
+  color:#fff; font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.35s ease;
+}
+
+.search-wrap .srch-btn:hover { background:var(--red-hover); transform:translateY(-50%) scale(1.06); }
+
+.head-right { display:flex; gap:8px; flex-shrink:0; animation:fadeSlideUp 0.6s 0.1s ease both; }
+
+.h-btn {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--chip);
+  color:var(--text-soft);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px;
+  transition:all 0.35s ease;
+  position:relative;
+}
+
+.h-btn:hover { background:#e8e8e8; color:var(--text); transform:translateY(-2px); }
+.h-btn:active { transform:scale(0.92); }
+
+/* ─── CATEGORY SCROLL ─── */
+.cat-bar {
+  position:fixed; top:var(--header-h); left:0; right:0; z-index:997;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(16px);
+  height:52px;
+  border-bottom:1px solid var(--border-light);
+  display:flex; align-items:center;
+  padding:0 16px;
+  transition:transform 0.4s ease;
+}
+
+.cat-bar.hidden { transform:translateY(-100%); }
+
+.cat-scroll {
+  display:flex; gap:6px;
+  max-width:1200px; margin:0 auto;
+  overflow-x:auto; scrollbar-width:none;
+  width:100%;
+  padding:2px 0;
+}
+
+.cat-scroll::-webkit-scrollbar { display:none; }
+
+.cat-pill {
+  white-space:nowrap; flex-shrink:0;
+  padding:9px 22px;
+  border-radius:100px;
+  background:transparent;
+  color:var(--text-soft);
+  font-size:13px; font-weight:500;
+  transition:all 0.4s ease;
+  position:relative;
+}
+
+.cat-pill:hover { background:var(--chip); color:var(--text); }
+
+.cat-pill.active {
+  background:var(--red);
+  color:#fff;
+  box-shadow:0 4px 16px var(--red-glow);
+  animation:scaleIn 0.3s ease;
+}
+
+.cat-pill i { margin-right:6px; font-size:12px; }
+
+/* ─── MAIN ─── */
+.main {
+  max-width:1200px;
+  margin:calc(var(--header-h) + 52px + 20px) auto 0;
+  padding:0 24px 24px;
+}
+
+@media (max-width:640px) {
+  .main { padding:0 14px 20px; }
+  .header { padding:0 14px; }
+}
+
+/* ─── SECTION LABEL ─── */
+.sec-label {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:18px;
+  animation:fadeSlideUp 0.5s ease both;
+}
+
+.sec-label .line {
+  flex:1; height:1px;
+  background:linear-gradient(90deg, var(--border), transparent);
+}
+
+.sec-label h2 {
+  font-size:18px; font-weight:800;
+  letter-spacing:-0.3px;
+  white-space:nowrap;
+}
+
+.sec-label .count {
+  font-size:12px; font-weight:500;
+  color:var(--text-mute);
+  background:var(--chip);
+  padding:2px 12px;
+  border-radius:100px;
+}
+
+/* ─── MASONRY GRID ─── */
+.masonry {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+@media (max-width:1024px) { .masonry { grid-template-columns:repeat(3,1fr); } }
+@media (max-width:720px) { .masonry { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:440px) { .masonry { grid-template-columns:1fr; } }
+
+/* ─── CARD ─── */
+.card {
+  background:var(--card);
+  border-radius:var(--radius);
+  border:1px solid var(--border-light);
+  overflow:hidden;
+  transition:all 0.5s cubic-bezier(0.16,1,0.3,1);
+  cursor:pointer;
+  position:relative;
+  animation:fadeSlideUp 0.5s ease both;
+  opacity:0;
+}
+
+.card:nth-child(1) { animation-delay:0.00s; }
+.card:nth-child(2) { animation-delay:0.06s; }
+.card:nth-child(3) { animation-delay:0.12s; }
+.card:nth-child(4) { animation-delay:0.18s; }
+.card:nth-child(5) { animation-delay:0.24s; }
+.card:nth-child(6) { animation-delay:0.30s; }
+.card:nth-child(7) { animation-delay:0.36s; }
+.card:nth-child(8) { animation-delay:0.42s; }
+
+.card:hover {
+  transform:translateY(-6px) scale(1.015);
+  box-shadow:var(--shadow-hover);
+  border-color:transparent;
+}
+
+.card:active { transform:scale(0.97); }
+
+.card-media {
+  position:relative; width:100%;
+  aspect-ratio:16/9;
+  background:#f5f5f5;
+  overflow:hidden;
+}
+
+.card-media img {
+  width:100%; height:100%;
+  object-fit:cover;
+  transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+
+.card:hover .card-media img { transform:scale(1.08); }
+
+.card-badge {
+  position:absolute; top:10px; left:10px;
+  background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(8px);
+  color:#fff;
+  padding:4px 10px; border-radius:100px;
+  font-size:10px; font-weight:600;
+  transition:all 0.3s ease;
+}
+
+.card:hover .card-badge { background:var(--red); }
+
+.card-body {
+  padding:14px 16px 16px;
+}
+
+.card-body h3 {
+  font-size:14px; font-weight:700;
+  line-height:1.35;
+  margin-bottom:3px;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.card-body .author {
+  font-size:12px; color:var(--text-soft);
+  margin-bottom:2px;
+}
+
+.card-body .meta {
+  font-size:11.5px; color:var(--text-mute);
+  display:flex; align-items:center; gap:8px;
+}
+
+/* ─── CARD VARIANTS ─── */
+.card-wide { grid-column:span 2; }
+
+.card-tall .card-media { aspect-ratio:9/16; }
+
+/* APK Card */
+.card-apk .card-media {
+  aspect-ratio:1/1;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, #fafafa, #f0f0f0);
+}
+
+.card-apk .card-media i { font-size:40px; opacity:0.25; color:var(--text-soft); }
+
+.card-apk .apk-ver {
+  position:absolute; top:10px; right:10px;
+  background:var(--red);
+  color:#fff;
+  padding:3px 10px; border-radius:100px;
+  font-size:9px; font-weight:700;
+  animation:pulseRing 2s infinite;
+}
+
+.card-apk .apk-dl {
+  display:inline-flex; align-items:center; gap:5px;
+  margin-top:8px;
+  padding:6px 14px;
+  border-radius:100px;
+  background:var(--red);
+  color:#fff;
+  font-size:11px; font-weight:600;
+  transition:all 0.35s ease;
+}
+
+.card-apk .apk-dl:hover { background:var(--red-hover); transform:translateY(-1px); }
+.card-apk .apk-dl i { font-size:10px; opacity:1; color:#fff; }
+
+/* 18+ Card */
+.card-adult .card-media {
+  position:relative;
+}
+
+.card-adult .card-media img {
+  filter:blur(32px) brightness(0.7);
+  transform:scale(1.1);
+}
+
+.card-adult:hover .card-media img { filter:blur(18px) brightness(0.75); }
+
+.adult-overlay {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  z-index:2;
+  animation:fadeIn 0.5s ease;
+}
+
+.adult-overlay .lock {
+  width:52px; height:52px;
+  border-radius:50%;
+  background:var(--red);
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+  margin-bottom:8px;
+  box-shadow:0 4px 20px var(--red-glow);
+  animation:float 3s ease-in-out infinite;
+}
+
+.adult-overlay span {
+  font-size:13px; font-weight:700; color:#fff;
+  background:rgba(230,57,70,0.9);
+  padding:5px 16px; border-radius:100px;
+  letter-spacing:1px;
+}
+
+/* ─── RED BUTTONS ─── */
+.btn-red {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:11px 24px;
+  border-radius:100px;
+  background:var(--red);
+  color:#fff;
+  font-size:14px; font-weight:600;
+  transition:all 0.4s ease;
+  position:relative;
+  overflow:hidden;
+}
+
+.btn-red::after {
+  content:''; position:absolute;
+  width:0; height:0; border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  transition:width 0.5s ease, height 0.5s ease;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+.btn-red:hover { background:var(--red-hover); transform:translateY(-2px); box-shadow:0 8px 24px var(--red-glow); }
+.btn-red:active { transform:scale(0.95); }
+
+.btn-red-sm {
+  padding:7px 16px;
+  font-size:12px;
+  gap:5px;
+}
+
+.btn-red-outline {
+  background:transparent;
+  color:var(--red);
+  border:2px solid var(--red);
+}
+
+.btn-red-outline:hover { background:var(--red); color:#fff; }
+
+/* ─── LOAD MORE ─── */
+.load-row {
+  display:flex; justify-content:center;
+  padding:36px 0 12px;
+  animation:fadeSlideUp 0.5s 0.3s ease both;
+}
+
+/* ─── PLAYER (overlay) ─── */
+.player {
+  display:none;
+  position:fixed; inset:0; z-index:2000;
+  background:#fff;
+  overflow-y:auto;
+  animation:fadeIn 0.3s ease;
+}
+
+.player.open { display:block; }
+
+.p-head {
+  display:flex; align-items:center;
+  justify-content:space-between;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border-light);
+  background:#fff;
+  position:sticky; top:0; z-index:10;
+}
+
+.p-back {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--chip); color:var(--text);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  transition:all 0.3s ease;
+}
+
+.p-back:hover { background:#e8e8e8; }
+
+.p-acts { display:flex; gap:8px; }
+
+.p-vid {
+  width:100%; max-width:860px; margin:0 auto;
+  background:#000;
+}
+
+.p-vid video { width:100%; display:block; max-height:70vh; outline:none; }
+
+.p-info { max-width:860px; margin:0 auto; padding:20px 24px 32px; }
+
+.p-title { font-size:22px; font-weight:800; margin-bottom:6px; line-height:1.3; }
+
+.p-stats {
+  display:flex; align-items:center; gap:20px;
+  font-size:13px; color:var(--text-mute);
+  margin-bottom:16px; flex-wrap:wrap;
+}
+
+.p-stats span { display:flex; align-items:center; gap:5px; }
+
+.p-actions {
+  display:flex; gap:10px; flex-wrap:wrap;
+  margin-bottom:20px; padding-bottom:20px;
+  border-bottom:1px solid var(--border-light);
+}
+
+.p-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:9px 20px;
+  border-radius:100px;
+  background:var(--chip);
+  color:var(--text-soft);
+  font-size:13px; font-weight:500;
+  transition:all 0.35s ease;
+}
+
+.p-btn:hover { background:#e8e8e8; }
+
+.p-btn.red { background:var(--red); color:#fff; }
+.p-btn.red:hover { background:var(--red-hover); }
+
+.p-btn.liked { border:2px solid var(--red); color:var(--red); background:var(--red-soft); }
+
+.p-author {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:18px;
+}
+
+.p-av {
+  width:44px; height:44px; border-radius:50%;
+  background:var(--chip);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; color:var(--text-mute);
+}
+
+.p-author-info h3 { font-size:15px; font-weight:700; }
+.p-author-info p { font-size:12px; color:var(--text-mute); }
+
+.p-desc {
+  background:var(--chip);
+  border-radius:var(--radius-sm);
+  padding:18px;
+}
+
+.p-desc h4 { font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text-soft); }
+.p-desc p { font-size:13px; line-height:1.65; color:var(--text-soft); white-space:pre-wrap; word-wrap:break-word; }
+
+/* ─── AGE GATE ─── */
+.age-gate {
+  display:none;
+  position:fixed; inset:0; z-index:3000;
+  background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(40px);
+  align-items:center; justify-content:center;
+  flex-direction:column;
+  padding:30px;
+  animation:fadeIn 0.4s ease;
+}
+
+.age-gate.open { display:flex; }
+
+.age-gate .lock-icon {
+  width:72px; height:72px;
+  border-radius:50%;
+  background:var(--red-soft);
+  color:var(--red);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px;
+  margin-bottom:16px;
+  animation:float 3s ease-in-out infinite;
+}
+
+.age-gate h2 { font-size:28px; font-weight:800; margin-bottom:6px; }
+.age-gate p { font-size:14px; color:var(--text-soft); margin-bottom:28px; text-align:center; max-width:360px; line-height:1.55; }
+
+.gate-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+
+/* ─── BOTTOM NAV ─── */
+.bot-nav {
+  display:none;
+  position:fixed; bottom:0; left:0; right:0;
+  background:rgba(255,255,255,0.98);
+  backdrop-filter:blur(24px);
+  border-top:1px solid var(--border-light);
+  z-index:999;
+  padding:5px 0 env(safe-area-inset-bottom,5px);
+  justify-content:space-around;
+  animation:fadeSlideUp 0.4s ease;
+}
+
+@media (max-width:768px) {
+  .bot-nav { display:flex; }
+  body { padding-bottom:58px; }
+}
+
+.bot-nav a {
+  display:flex; flex-direction:column;
+  align-items:center; gap:1px;
+  font-size:9.5px; color:var(--text-mute);
+  padding:4px 16px;
+  transition:all 0.3s ease;
+  position:relative;
+}
+
+.bot-nav a.active,
+.bot-nav a:hover { color:var(--red); }
+
+.bot-nav a i { font-size:20px; transition:all 0.3s ease; }
+.bot-nav a.active i { transform:scale(1.1); }
+
+.bot-nav a.active::after {
+  content:''; position:absolute; top:-1px; left:50%;
+  transform:translateX(-50%);
+  width:20px; height:2px; background:var(--red);
+  border-radius:2px;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position:fixed; bottom:100px; left:50%;
+  transform:translateX(-50%);
+  background:#111;
+  color:#fff;
+  padding:12px 26px;
+  border-radius:100px;
+  font-size:13px; font-weight:500;
+  box-shadow:0 8px 32px rgba(0,0,0,0.15);
+  z-index:9999;
+  animation:toastUp 0.4s ease;
+  pointer-events:none;
+}
+
+@keyframes toastUp {
+  from { opacity:0; transform:translateX(-50%) translateY(20px); }
+  to { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+
+/* ─── SCROLL TOP ─── */
+.scroll-top {
+  position:fixed; bottom:110px; right:20px; z-index:998;
+  width:44px; height:44px; border-radius:50%;
+  background:var(--red);
+  color:#fff; font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px var(--red-glow);
+  transition:all 0.4s ease;
+  opacity:0; visibility:hidden;
+  transform:translateY(20px);
+}
+
+.scroll-top.visible { opacity:1; visibility:visible; transform:translateY(0); }
+.scroll-top:hover { transform:translateY(-3px); box-shadow:0 8px 28px var(--red-glow); }
+.scroll-top:active { transform:scale(0.9); }
+
+/* ─── ENTER ANIM ─── */
+.enter-anim {
+  animation:fadeSlideUp 0.5s ease both;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">N</div>
+      <span class="logo-text">Ny<span>xora</span></span>
+    </div>
+
+    <div class="search-wrap">
+      <input type="text" placeholder="Search anything..."
+             onkeydown="if(event.key==='Enter'){showToast('Searching...')}">
+      <button class="srch-btn" onclick="showToast('Search')"><i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <div class="head-right">
+      <button class="h-btn" onclick="showToast('Notifications')"><i class="fas fa-bell"></i></button>
+      <button class="h-btn" onclick="showToast('Grid view')"><i class="fas fa-th-large"></i></button>
+      <button class="h-btn" onclick="showToast('Settings')"><i class="fas fa-sliders-h"></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== CATEGORIES ===== -->
+<div class="cat-bar" id="catBar">
+  <div class="cat-scroll">
+    <button class="cat-pill active" onclick="switchCat(this,'home')">
+      <i class="fas fa-compass"></i> For You
+    </button>
+    <button class="cat-pill" onclick="switchCat(this,'videos')">
+      <i class="fas fa-play"></i> Videos
+    </button>
+    <button class="cat-pill" onclick="switchCat(this,'shorts')">
+      <i class="fas fa-bolt"></i> Shorts
+    </button>
+    <button class="cat-pill" onclick="switchCat(this,'movies')">
+      <i class="fas fa-film"></i> Movies
+    </button>
+    <button class="cat-pill" onclick="switchCat(this,'apk')">
+      <i class="fas fa-cube"></i> MOD APK
+    </button>
+    <button class="cat-pill" onclick="gateOpen()">
+      <i class="fas fa-shield-halved"></i> 18+
+    </button>
+    <button class="cat-pill" onclick="switchCat(this,'trending')">
+      <i class="fas fa-chart-line"></i> Trending
+    </button>
+    <button class="cat-pill" onclick="switchCat(this,'new')">
+      <i class="fas fa-sparkles"></i> New
+    </button>
+  </div>
+</div>
+
+<!-- ===== SCROLL TOP ===== -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- ===== AGE GATE ===== -->
+<div class="age-gate" id="ageGate">
+  <div class="lock-icon"><i class="fas fa-shield-halved"></i></div>
+  <h2>🔞 Adult Content</h2>
+  <p>You must be 18 or older to view this content. Please confirm your age.</p>
+  <div class="gate-btns">
+    <button class="btn-red" onclick="enterAdult()">
+      <i class="fas fa-check"></i> I am 18+
+    </button>
+    <button class="btn-red btn-red-outline" onclick="gateClose()">
+      <i class="fas fa-times"></i> Leave
+    </button>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+  <!-- HOME TAB -->
+  <div class="tab-content" id="tab-home">
+
+    <div class="sec-label" style="margin-top:4px">
+      <h2>🔥 Trending Now</h2>
+      <span class="count">8 videos</span>
+      <span class="line"></span>
+    </div>
+    <div class="masonry" id="masonry-home"></div>
+
+    <div class="sec-label" style="margin-top:28px">
+      <h2>⚡ Shorts & Reels</h2>
+      <span class="count">6 clips</span>
+      <span class="line"></span>
+    </div>
+    <div class="masonry" id="masonry-shorts"></div>
+
+    <div class="sec-label" style="margin-top:28px">
+      <h2>📦 Mod APK</h2>
+      <span class="count">6 apps</span>
+      <span class="line"></span>
+    </div>
+    <div class="masonry" id="masonry-apk"></div>
+
+    <div class="sec-label" style="margin-top:28px">
+      <h2>🎬 Movies & Trailers</h2>
+      <span class="count">4 titles</span>
+      <span class="line"></span>
+    </div>
+    <div class="masonry" id="masonry-movies"></div>
+
+  </div>
+
+  <!-- OTHER TABS -->
+  <div class="tab-content" id="tab-videos" style="display:none">
+    <div class="sec-label"><h2>🎥 All Videos</h2><span class="count">12</span><span class="line"></span></div>
+    <div class="masonry" id="masonry-videos"></div>
+  </div>
+  <div class="tab-content" id="tab-shorts" style="display:none">
+    <div class="sec-label"><h2>⚡ Shorts</h2><span class="count">8</span><span class="line"></span></div>
+    <div class="masonry" id="masonry-shorts-all"></div>
+  </div>
+  <div class="tab-content" id="tab-movies" style="display:none">
+    <div class="sec-label"><h2>🎬 Movies</h2><span class="count">6</span><span class="line"></span></div>
+    <div class="masonry" id="masonry-movies-all"></div>
+  </div>
+  <div class="tab-content" id="tab-apk" style="display:none">
+    <div class="sec-label"><h2>📦 Mod APK</h2><span class="count">8</span><span class="line"></span></div>
+    <div class="masonry" id="masonry-apk-all"></div>
+  </div>
+  <div class="tab-content" id="tab-trending" style="display:none">
+    <div class="sec-label"><h2>📈 Trending</h2><span class="count">10</span><span class="line"></span></div>
+    <div class="masonry" id="masonry-trending"></div>
+  </div>
+  <div class="tab-content" id="tab-new" style="display:none">
+    <div class="sec-label"><h2>✨ New</h2><span class="count">10</span><span class="line"></span></div>
+    <div class="masonry" id="masonry-new"></div>
+  </div>
+
+  <div class="load-row">
+    <button class="btn-red" onclick="showToast('Loading more content...')">
+      <i class="fas fa-redo"></i> Load More
+    </button>
+  </div>
+</main>
+
+<!-- ===== PLAYER ===== -->
+<div class="player" id="player">
+  <div class="p-head">
+    <button class="p-back" onclick="closePlayer()"><i class="fas fa-arrow-left"></i></button>
+    <div class="p-acts">
+      <button class="p-btn red" onclick="showToast('Downloading...')">
+        <i class="fas fa-download"></i> Download
+      </button>
+    </div>
+  </div>
+  <div class="p-vid">
+    <video id="playerVid" controls autoplay playsinline></video>
+  </div>
+  <div class="p-info">
+    <h1 class="p-title" id="pTitle">Video Title</h1>
+    <div class="p-stats">
+      <span><i class="fas fa-eye"></i> <span id="pViews">—</span></span>
+      <span><i class="fas fa-thumbs-up"></i> <span id="pLikes">—</span></span>
+      <span><i class="fas fa-clock"></i> <span id="pDur">—</span></span>
+    </div>
+    <div class="p-actions">
+      <button class="p-btn red"><i class="fas fa-download"></i> Download</button>
+      <button class="p-btn"><i class="fas fa-thumbs-up"></i> Like</button>
+      <button class="p-btn"><i class="fas fa-share-alt"></i> Share</button>
+    </div>
+    <div class="p-author">
+      <div class="p-av"><i class="fas fa-user"></i></div>
+      <div class="p-author-info">
+        <h3 id="pAuthor">Nyxora</h3>
+        <p>Content Creator</p>
+      </div>
+    </div>
+    <div class="p-desc">
+      <h4>Description</h4>
+      <p id="pDesc">No description available.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bot-nav">
+  <a href="#" class="active" onclick="switchCat(document.querySelectorAll('.cat-pill')[0],'home')">
+    <i class="fas fa-compass"></i> Discover
+  </a>
+  <a href="#" onclick="switchCat(document.querySelectorAll('.cat-pill')[2],'shorts')">
+    <i class="fas fa-bolt"></i> Shorts
+  </a>
+  <a href="#" onclick="switchCat(document.querySelectorAll('.cat-pill')[4],'apk')">
+    <i class="fas fa-cube"></i> APK
+  </a>
+  <a href="#" onclick="gateOpen()">
+    <i class="fas fa-shield-halved"></i> 18+
+  </a>
+  <a href="#" onclick="showToast('Refreshed!')">
+    <i class="fas fa-sync-alt"></i> Sync
+  </a>
+</nav>
+
+<script>
+// ─── TOAST ───
+function showToast(msg) {
+  const o = document.querySelector('.toast');
+  if (o) o.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity='0';
+    t.style.transform='translateX(-50%) translateY(20px)';
+    t.style.transition='all 0.35s ease';
+    setTimeout(() => t.remove(), 350);
+  }, 2800);
+}
+
+// ─── SCROLL TOP ───
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTop');
+  if (window.scrollY > 400) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+
+  // Hide header on scroll down
+  const header = document.getElementById('header');
+  const catBar = document.getElementById('catBar');
+  if (window.scrollY > 100 && window.scrollY > window.lastScroll) {
+    header.classList.add('hidden');
+    catBar.classList.add('hidden');
+  } else {
+    header.classList.remove('hidden');
+    catBar.classList.remove('hidden');
+  }
+  window.lastScroll = window.scrollY;
+});
+
+// ─── CATEGORY ───
+function switchCat(btn, id) {
+  document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display='none');
+  const target = document.getElementById('tab-'+id);
+  if (target) target.style.display='block';
+  // Bottom nav sync
+  document.querySelectorAll('.bot-nav a').forEach(a => a.classList.remove('active'));
+  const map = { home:0, shorts:1, apk:2, adult:3 };
+  if (map[id]!==undefined) {
+    const links = document.querySelectorAll('.bot-nav a');
+    if (links[map[id]]) links[map[id]].classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─── AGE GATE ───
+let adultOk = false;
+function gateOpen() { if (!adultOk) document.getElementById('ageGate').classList.add('open'); }
+function gateClose() { document.getElementById('ageGate').classList.remove('open'); }
+function enterAdult() { adultOk=true; gateClose(); showToast('🔞 Adult section unlocked'); }
+
+// ─── PLAYER ───
+function openPlayer(title, author, views) {
+  document.getElementById('player').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('pTitle').textContent=title||'Video';
+  document.getElementById('pViews').textContent=views||'—';
+  document.getElementById('pLikes').textContent='—';
+  document.getElementById('pDur').textContent='—';
+  document.getElementById('pAuthor').textContent=author||'Nyxora';
+  document.getElementById('pDesc').textContent='Premium content on Nyxora.';
+  const v = document.getElementById('playerVid');
+  v.pause(); v.src='';
+}
+
+function closePlayer() {
+  document.getElementById('player').classList.remove('open');
+  document.body.style.overflow='';
+  document.getElementById('playerVid').pause();
+  document.getElementById('playerVid').src='';
+}
+
+// ─── DATA ───
+const videos = [
+  { t:'🔥 Top Hits 2026 Mix', a:'MusicLab', v:'2.1M', d:'10:32', img:'https://picsum.photos/seed/v1/500/280' },
+  { t:'🎮 GTA 6 Full Gameplay', a:'GameZone', v:'4.8M', d:'15:20', img:'https://picsum.photos/seed/v2/500/280' },
+  { t:'🎬 New Movie Official Trailer', a:'CineMax', v:'1.2M', d:'2:45', img:'https://picsum.photos/seed/v3/500/280' },
+  { t:'😂 Funniest Moments Compilation', a:'ComedyClub', v:'890K', d:'8:15', img:'https://picsum.photos/seed/v4/500/280' },
+  { t:'⚽ Best Football Goals', a:'SportsLive', v:'3.3M', d:'12:00', img:'https://picsum.photos/seed/v5/500/280' },
+  { t:'💻 Learn Code in 1 Hour', a:'DevPro', v:'650K', d:'60:00', img:'https://picsum.photos/seed/v6/500/280' },
+  { t:'📰 World News Today', a:'News24', v:'1.8M', d:'25:00', img:'https://picsum.photos/seed/v7/500/280' },
+  { t:'📱 Best Phone 2026 Review', a:'TechGuru', v:'920K', d:'18:30', img:'https://picsum.photos/seed/v8/500/280' }
+];
+
+const shortClips = [
+  { t:'🔥 Dance Challenge', v:'1.2M', img:'https://picsum.photos/seed/s1/400/600' },
+  { t:'🐱 Funny Cat', v:'890K', img:'https://picsum.photos/seed/s2/400/600' },
+  { t:'🍳 Cooking Hack', v:'560K', img:'https://picsum.photos/seed/s3/400/600' },
+  { t:'💪 Workout Tip', v:'340K', img:'https://picsum.photos/seed/s4/400/600' },
+  { t:'✨ Magic Trick', v:'2.1M', img:'https://picsum.photos/seed/s5/400/600' },
+  { t:'✈️ Travel Reel', v:'780K', img:'https://picsum.photos/seed/s6/400/600' }
+];
+
+const apkList = [
+  { t:'Netflix Mod', a:'LuckyPatcher', v:'v8.120.1', dl:'2.1M', icon:'fab fa-netflix', c:'#e50914' },
+  { t:'Spotify Premium', a:'ModTeam', v:'v8.9.8', dl:'4.5M', icon:'fab fa-spotify', c:'#1db954' },
+  { t:'YouTube Vanced', a:'VancedTeam', v:'v19.16.39', dl:'10M+', icon:'fab fa-youtube', c:'#ff0000' },
+  { t:'Canva Pro', a:'ModZone', v:'v12.5.0', dl:'890K', icon:'fas fa-paint-brush', c:'#8b5cf6' },
+  { t:'CapCut Pro', a:'ByteDance', v:'v12.0.0', dl:'3.2M', icon:'fas fa-cut', c:'#3b82f6' },
+  { t:'ChatGPT Plus', a:'OpenAI Mod', v:'v1.2025', dl:'1.8M', icon:'fas fa-robot', c:'#10b981' }
+];
+
+const movies = [
+  { t:'🎬 Interstellar', a:'Christopher Nolan', v:'2.8M', d:'2:49:00', img:'https://picsum.photos/seed/m1/500/280' },
+  { t:'🎬 Inception', a:'Christopher Nolan', v:'3.1M', d:'2:28:00', img:'https://picsum.photos/seed/m2/500/280' },
+  { t:'🎬 The Matrix', a:'Wachowski', v:'2.4M', d:'2:16:00', img:'https://picsum.photos/seed/m3/500/280' },
+  { t:'🎬 Dune Part Two', a:'Denis Villeneuve', v:'1.9M', d:'2:45:00', img:'https://picsum.photos/seed/m4/500/280' }
+];
+
+// ─── BUILD ───
+function buildVideos(data, id, wideIdx=0) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = data.map((v,i) => `
+    <div class="card ${i===wideIdx?'card-wide':''}" onclick="openPlayer('${v.t.replace(/'/g,"\\'")}','${v.a.replace(/'/g,"\\'")}','${v.v}')">
+      <div class="card-media">
+        <img src="${v.img}" loading="lazy" alt="">
+        <span class="card-badge">${v.d||'0:00'}</span>
+      </div>
+      <div class="card-body">
+        <h3>${v.t}</h3>
+        <div class="author">${v.a}</div>
+        <div class="meta"><span>${v.v} views</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildShorts(data, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = data.map((v,i) => `
+    <div class="card card-tall" onclick="openPlayer('${v.t.replace(/'/g,"\\'")}','Shorts','${v.v}')">
+      <div class="card-media">
+        <img src="${v.img}" loading="lazy" alt="">
+      </div>
+      <div class="card-body">
+        <h3>${v.t}</h3>
+        <div class="meta"><span>${v.v} views</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildApks(data, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = data.map((v,i) => `
+    <div class="card card-apk">
+      <div class="card-media" style="background:linear-gradient(135deg, ${v.c}12, ${v.c}06)">
+        <i class="${v.icon}" style="color:${v.c};opacity:0.4"></i>
+        <span class="apk-ver">${v.v}</span>
+      </div>
+      <div class="card-body">
+        <h3>${v.t}</h3>
+        <div class="author">${v.a}</div>
+        <div class="meta"><span><i class="fas fa-download"></i> ${v.dl} downloads</span></div>
+        <button class="apk-dl" onclick="showToast('Downloading ${v.t}...')">
+          <i class="fas fa-download"></i> Download
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function buildMovies(data, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = data.map((v,i) => `
+    <div class="card ${i===0?'card-wide':''}" onclick="openPlayer('${v.t.replace(/'/g,"\\'")}','${v.a.replace(/'/g,"\\'")}','${v.v}')">
+      <div class="card-media">
+        <img src="${v.img}" loading="lazy" alt="">
+        <span class="card-badge">${v.d||'0:00'}</span>
+      </div>
+      <div class="card-body">
+        <h3>${v.t}</h3>
+        <div class="author">${v.a}</div>
+        <div class="meta"><span>${v.v} views</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  buildVideos(videos, 'masonry-home', 0);
+  buildShorts(shortClips, 'masonry-shorts');
+  buildApks(apkList, 'masonry-apk');
+  buildMovies(movies, 'masonry-movies');
+  buildVideos(videos, 'masonry-videos', 2);
+  buildShorts(shortClips, 'masonry-shorts-all');
+  buildMovies(movies, 'masonry-movies-all');
+  buildApks(apkList, 'masonry-apk-all');
+  buildVideos(videos, 'masonry-trending', 1);
+  buildVideos(videos, 'masonry-new', 3);
+});
+</script>
+
+</body>
+</html>
