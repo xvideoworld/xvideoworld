@@ -1,0 +1,9 @@
+{
+"name":"Nyxora",
+"short_name":"Nyxora",
+"start_url":"index.html",
+"display":"standalone",
+"background_color":"#000",
+"theme_color":"#ff0033",
+"icons":[]
+}
