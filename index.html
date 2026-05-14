@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyxora - Premium Entertainment Hub</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ff0000;
+            --bg-overlay: rgba(0, 0, 0, 0.8);
+            --card-bg: rgba(30, 30, 30, 0.85);
+            --text: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
+            /* আপনার দেওয়া ব্যাকগ্রাউন্ড ইমেজ */
+            background: url('https://i.postimg.cc/3RGD3350/a707925633db413cd7d514767ecdfa1f.jpg') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #000;
+        }
+
+        /* Background Dark Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        /* Header UI */
+        header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .logo { font-size: 28px; font-weight: 900; cursor: pointer; letter-spacing: 1px; }
+        .logo span { color: var(--primary); }
+
+        .search-box input {
+            width: 85%;
+            padding: 12px;
+            margin-top: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 25px;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* Viewport Logic */
+        #app-viewport {
+            padding: 15px;
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
+
+        .section-title { 
+            font-size: 20px;
+            margin: 20px 0;
+            padding-left: 10px;
+            border-left: 5px solid var(--primary);
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #444;
+            transition: transform 0.2s;
+        }
+
+        .card:active { transform: scale(0.95); }
+
+        .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+
+        .card-body { padding: 10px; }
+        .card-body h4 { 
+            margin: 0; 
+            font-size: 13px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+
+        .btn-play {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Bottom Nav UI */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #000;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #333;
+            z-index: 1000;
+        }
+
+        .nav-item { text-align: center; color: #777; font-size: 12px; cursor: pointer; transition: 0.3s; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* Loader */
+        .loader { text-align: center; padding: 50px; color: var(--primary); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="logo-btn">Nyx<span>ora</span></div>
+        <div class="search-box">
+            <input type="text" placeholder="Search Nyxora Cloud...">
+        </div>
+    </header>
+
+    <main id="app-viewport">
+        <div id="view-title" class="section-title">Trending Reels</div>
+        <div id="content-grid" class="grid">
+            </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="navigate('reel', this)">
+            <i class="fa fa-bolt"></i><span>Reels</span>
+        </div>
+        <div class="nav-item" onclick="navigate('movie', this)">
+            <i class="fa fa-play-circle"></i><span>Movies</span>
+        </div>
+        <div class="nav-item" onclick="navigate('app', this)">
+            <i class="fa fa-download"></i><span>Apps</span>
+        </div>
+    </nav>
+
+    <script>
+        const API_BASE = "https://vid.puffyan.us/api/v1";
+        let secretCounter = 0;
+
+        // 1. Navigation Logic
+        async function navigate(type, element) {
+            // Update Active Nav Style
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
+
+            const grid = document.getElementById('content-grid');
+            const title = document.getElementById('view-title');
+            grid.innerHTML = '<div class="loader">Connecting to Nyxora Cloud...</div>';
+
+            if (type === 'reel') {
+                title.innerText = "Trending Reels";
+                fetchVideos('trending?type=shorts');
+            } else if (type === 'movie') {
+                title.innerText = "Latest Movies";
+                fetchVideos('search?q=official+movie+trailers+2026');
+            } else if (type === 'app') {
+                title.innerText = "Premium Apps (APK)";
+                grid.innerHTML = '<p style="text-align:center;">APK Library Syncing soon...</p>';
+            } else if (type === 'secret') {
+                title.innerText = "Nyxora VIP (Secret)";
+                title.style.color = "gold";
+                fetchVideos('search?q=action+movies');
+            }
+        }
+
+        // 2. Data Fetching (Invidious API)
+        async function fetchVideos(endpoint) {
+            const grid = document.getElementById('content-grid');
+            try {
+                const res = await fetch(`${API_BASE}/${endpoint}`);
+                const data = await res.json();
+                
+                grid.innerHTML = ''; 
+                data.slice(0, 12).forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <img src="${item.videoThumbnails[0].url}" alt="thumb">
+                        <div class="card-body">
+                            <h4>${item.title}</h4>
+                            <button class="btn-play" onclick="watch('${item.videoId}')">Watch Now</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                grid.innerHTML = '<div class="loader">Server Busy. Try Again!</div>';
+            }
+        }
+
+        // 3. Player Logic
+        function watch(id) {
+            const playerUrl = `https://vid.puffyan.us/embed/${id}?autoplay=1`;
+            window.open(playerUrl, '_blank');
+        }
+
+        // 4. Secret Mode Activation
+        document.getElementById('logo-btn').addEventListener('click', () => {
+            secretCounter++;
+            if (secretCounter === 5) {
+                alert("VIP Mode Unlocked!");
+                navigate('secret', document.querySelector('.nav-item'));
+                secretCounter = 0;
+            }
+        });
+
+        // Initial Load
+        window.onload = () => {
+            navigate('reel', document.querySelector('.nav-item'));
+        };
+    </script>
+</body>
+</html>
