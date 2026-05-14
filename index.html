@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyxora - Premium Glass UI</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ff0000;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-color);
+            /* ছবিটা পুরো স্ক্রিন জুড়ে থাকবে */
+            background: url('https://i.postimg.cc/3RGD3350/a707925633db413cd7d514767ecdfa1f.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        /* হেডার এবং সার্চ বার একদম কাঁচের মতো */
+        header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 20px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo { font-size: 32px; font-weight: 900; cursor: pointer; letter-spacing: 2px; }
+        .logo span { color: var(--primary); }
+
+        .search-box input {
+            width: 90%;
+            padding: 14px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            color: white;
+            outline: none;
+            backdrop-filter: blur(10px);
+            font-size: 16px;
+        }
+
+        #app-viewport {
+            padding: 20px;
+            padding-bottom: 110px;
+        }
+
+        .section-title { 
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: 800;
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        /* কার্ডগুলো স্বচ্ছ সাদা হবে */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            transition: transform 0.3s ease;
+        }
+
+        .card:active { transform: scale(0.95); }
+
+        .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+
+        .card-body { padding: 12px; }
+        .card-body h4 { 
+            margin: 0; 
+            font-size: 14px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            color: #fff;
+        }
+
+        .btn-play {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* বটম নেভিগেশন */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(30px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+
+        .nav-item { text-align: center; color: #ccc; font-size: 12px; cursor: pointer; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+
+        .loader { text-align: center; padding: 50px; font-weight: bold; font-size: 18px; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="logo-btn">Nyx<span>ora</span></div>
+        <div class="search-box">
+            <input type="text" placeholder="Nyxora ক্লাউডে খুঁজুন...">
+        </div>
+    </header>
+
+    <main id="app-viewport">
+        <div id="view-title" class="section-title">Trending Reels</div>
+        <div id="content-grid" class="grid"></div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="navigate('reel', this)">
+            <i class="fa fa-bolt"></i><span>Reels</span>
+        </div>
+        <div class="nav-item" onclick="navigate('movie', this)">
+            <i class="fa fa-play-circle"></i><span>Movies</span>
+        </div>
+        <div class="nav-item" onclick="navigate('app', this)">
+            <i class="fa fa-download"></i><span>Apps</span>
+        </div>
+    </nav>
+
+    <script>
+        // একাধিক স্ট্যাবল সার্ভার
+        const INSTANCES = [
+            "https://invidious.projectsegfau.lt/api/v1",
+            "https://inv.tux.pizza/api/v1",
+            "https://invidious.nerdvpn.de/api/v1"
+        ];
+        
+        let secretCounter = 0;
+
+        async function navigate(type, element) {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
+
+            const grid = document.getElementById('content-grid');
+            const title = document.getElementById('view-title');
+            grid.innerHTML = '<div class="loader">কানেক্ট হচ্ছে...</div>';
+
+            if (type === 'reel') {
+                title.innerText = "Trending Reels";
+                fetchVideos('trending?type=shorts');
+            } else if (type === 'movie') {
+                title.innerText = "Latest Trailers";
+                fetchVideos('search?q=new+movie+trailers+2026');
+            } else if (type === 'app') {
+                title.innerText = "Premium Apps (APK)";
+                grid.innerHTML = '<p style="text-align:center; padding:20px;">APK স্টোর শীঘ্রই আসছে...</p>';
+            }
+        }
+
+        async function fetchVideos(endpoint) {
+            const grid = document.getElementById('content-grid');
+            let success = false;
+
+            for (let baseUrl of INSTANCES) {
+                try {
+                    const res = await fetch(`${baseUrl}/${endpoint}`);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    grid.innerHTML = ''; 
+                    data.slice(0, 10).forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                            <img src="${item.videoThumbnails[0].url}" alt="thumb">
+                            <div class="card-body">
+                                <h4>${item.title}</h4>
+                                <button class="btn-play" onclick="watch('${item.videoId}', '${baseUrl}')">দেখুন</button>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                    success = true;
+                    break;
+                } catch (err) {
+                    console.log("Next Instance...");
+                }
+            }
+
+            if (!success) {
+                grid.innerHTML = '<div class="loader">🖕</div>';
+            }
+        }
+
+        function watch(id, baseUrl) {
+            const embedBase = baseUrl.replace('/api/v1', '/embed');
+            const playerUrl = `${embedBase}/${id}?autoplay=1`;
+            window.open(playerUrl, '_blank');
+        }
+
+        document.getElementById('logo-btn').addEventListener('click', () => {
+            secretCounter++;
+            if (secretCounter === 5) {
+                alert("Nyxora VIP মোড একটিভ হয়েছে!");
+                secretCounter = 0;
+            }
+        });
+
+        window.onload = () => navigate('reel', document.querySelector('.nav-item'));
+    </script>
+</body>
+</html>
