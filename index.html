@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nyxora Premium</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root{
+  --primary:#ff0033;
+  --bg:#f5f5f5;
+  --card:#ffffff;
+  --text:#111;
+  --shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(20px);
+  padding:15px;
+  border-bottom:1px solid #ddd;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:30px;
+  font-weight:900;
+}
+
+.logo span{
+  color:var(--primary);
+}
+
+.profile-btn{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  overflow:hidden;
+  cursor:pointer;
+}
+
+.profile-btn img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.search-box{
+  margin-top:15px;
+  position:relative;
+}
+
+.search-box input{
+  width:100%;
+  padding:15px 20px 15px 50px;
+  border:none;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:var(--shadow);
+  outline:none;
+}
+
+.search-box i{
+  position:absolute;
+  left:18px;
+  top:17px;
+  color:#777;
+}
+
+.hero{
+  margin:20px 15px;
+  border-radius:25px;
+  overflow:hidden;
+  background:url('https://i.postimg.cc/wTyH0zsB/793589472f0a8aa6204d6900f51d9014.jpg') center/cover;
+  height:240px;
+  position:relative;
+  display:flex;
+  align-items:flex-end;
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  padding:20px;
+  color:white;
+}
+
+.hero-content h1{
+  font-size:32px;
+  margin-bottom:10px;
+}
+
+.hero-btn{
+  margin-top:10px;
+  padding:12px 18px;
+  border:none;
+  border-radius:14px;
+  background:var(--primary);
+  color:white;
+  font-weight:bold;
+}
+
+.category-tabs{
+  display:flex;
+  gap:10px;
+  overflow:auto;
+  padding:0 15px 20px;
+}
+
+.category-tabs::-webkit-scrollbar{
+  display:none;
+}
+
+.tab{
+  text-decoration:none;
+  color:#111;
+  background:white;
+  padding:12px 18px;
+  border-radius:30px;
+  white-space:nowrap;
+  box-shadow:var(--shadow);
+  font-weight:bold;
+}
+
+.section{
+  padding:0 15px 30px;
+}
+
+.section-title{
+  font-size:25px;
+  margin-bottom:15px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:.3s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.card img{
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+}
+
+.card-body{
+  padding:12px;
+}
+
+.card-body h3{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.play-btn{
+  width:100%;
+  border:none;
+  padding:12px;
+  border-radius:12px;
+  background:var(--primary);
+  color:white;
+  font-weight:bold;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:white;
+  padding:14px 0;
+  box-shadow:0 -5px 20px rgba(0,0,0,0.08);
+}
+
+.nav-item{
+  text-align:center;
+  color:#777;
+  font-size:12px;
+}
+
+.nav-item i{
+  display:block;
+  font-size:22px;
+  margin-bottom:5px;
+}
+
+.login-page{
+  position:fixed;
+  inset:0;
+  background:white;
+  z-index:9999;
+  display:none;
+  overflow:auto;
+}
+
+.login-container{
+  max-width:420px;
+  margin:80px auto;
+  padding:25px;
+}
+
+.login-container h1{
+  font-size:35px;
+  margin-bottom:10px;
+}
+
+.login-container p{
+  color:#666;
+  margin-bottom:25px;
+}
+
+.login-container input{
+  width:100%;
+  padding:16px;
+  margin-bottom:15px;
+  border-radius:16px;
+  border:1px solid #ddd;
+  outline:none;
+}
+
+.login-btn{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:16px;
+  background:var(--primary);
+  color:white;
+  font-weight:bold;
+}
+
+.extra-links{
+  display:flex;
+  justify-content:space-between;
+  margin-top:15px;
+  color:#666;
+}
+
+.close-login{
+  position:absolute;
+  top:20px;
+  right:20px;
+  font-size:25px;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="topbar">
+<div class="logo">Nyx<span>ora</span></div>
+
+<div class="profile-btn" onclick="openLogin()">
+<img src="https://i.pravatar.cc/100" alt="profile">
+</div>
+</div>
+
+<div class="search-box">
+<i class="fa fa-search"></i>
+<input type="text" placeholder="Search anything...">
+</div>
+</header>
+
+<section class="hero">
+<div class="hero-content">
+<h1>Nyxora Streaming</h1>
+<p>Watch premium movies, anime and reels.</p>
+<button class="hero-btn">Watch Now</button>
+</div>
+</section>
+
+<section class="category-tabs">
+<a href="#all" class="tab">All</a>
+<a href="#action" class="tab">Action</a>
+<a href="#anime" class="tab">Anime</a>
+<a href="#music" class="tab">Music</a>
+<a href="#tech" class="tab">Tech</a>
+</section>
+
+<section class="section" id="all">
+<h2 class="section-title">🔥 Trending</h2>
+<div class="grid" id="allGrid"></div>
+</section>
+
+<section class="section" id="action">
+<h2 class="section-title">🎬 Action</h2>
+<div class="grid" id="actionGrid"></div>
+</section>
+
+<section class="section" id="anime">
+<h2 class="section-title">🎌 Anime</h2>
+<div class="grid" id="animeGrid"></div>
+</section>
+
+<section class="section" id="music">
+<h2 class="section-title">🎵 Music</h2>
+<div class="grid" id="musicGrid"></div>
+</section>
+
+<section class="section" id="tech">
+<h2 class="section-title">💻 Tech</h2>
+<div class="grid" id="techGrid"></div>
+</section>
+
+<nav class="bottom-nav">
+<div class="nav-item">
+<i class="fa fa-home"></i>
+Home
+</div>
+
+<div class="nav-item">
+<i class="fa fa-film"></i>
+Movies
+</div>
+
+<div class="nav-item">
+<i class="fa fa-fire"></i>
+Trending
+</div>
+
+<div class="nav-item" onclick="openLogin()">
+<i class="fa fa-user"></i>
+Profile
+</div>
+</nav>
+
+<div class="login-page" id="loginPage">
+<div class="close-login" onclick="closeLogin()">
+<i class="fa fa-xmark"></i>
+</div>
+
+<div class="login-container">
+<h1>Welcome Back</h1>
+<p>Login to continue your journey</p>
+
+<input type="email" placeholder="Email address">
+<input type="password" placeholder="Password">
+
+<button class="login-btn">Login</button>
+
+<div class="extra-links">
+<span>Create Account</span>
+<span>Forgot Password?</span>
+</div>
+</div>
+</div>
+
+<script>
+const movies = [
+{
+ title:'Cyber Future',
+ image:'https://picsum.photos/500/300?1'
+},
+{
+ title:'Dark Universe',
+ image:'https://picsum.photos/500/300?2'
+},
+{
+ title:'Neo City',
+ image:'https://picsum.photos/500/300?3'
+},
+{
+ title:'Quantum Rise',
+ image:'https://picsum.photos/500/300?4'
+}
+];
+
+function render(id){
+ const grid = document.getElementById(id);
+
+ movies.forEach(movie=>{
+   const card = document.createElement('div');
+   card.className='card';
+
+   card.innerHTML=`
+   <img src="${movie.image}">
+
+   <div class="card-body">
+   <h3>${movie.title}</h3>
+   <button class="play-btn">Watch Now</button>
+   </div>
+   `;
+
+   grid.appendChild(card);
+ });
+}
+
+render('allGrid');
+render('actionGrid');
+render('animeGrid');
+render('musicGrid');
+render('techGrid');
+
+function openLogin(){
+ document.getElementById('loginPage').style.display='block';
+}
+
+function closeLogin(){
+ document.getElementById('loginPage').style.display='none';
+}
+</script>
+
+</body>
+</html>
