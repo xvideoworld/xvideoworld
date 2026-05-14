@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyxora - Full Glass View</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ff0000;
+            --glass: rgba(255, 255, 255, 0.12); /* কাঁচের মতো স্বচ্ছ */
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text);
+            /* ছবিটা পুরো সাইটের ব্যাকগ্রাউন্ড হিসেবে থাকবে */
+            background: url('https://i.postimg.cc/3RGD3350/a707925633db413cd7d514767ecdfa1f.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* হেডার এবং সার্চ বার ছবির ওপর ভাসবে */
+        header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo { font-size: 30px; font-weight: 900; cursor: pointer; text-shadow: 2px 2px 8px rgba(0,0,0,0.4); }
+        .logo span { color: var(--primary); }
+
+        .search-box input {
+            width: 90%;
+            padding: 12px 20px;
+            margin-top: 15px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            color: white;
+            outline: none;
+            font-size: 16px;
+        }
+
+        /* কন্টেন্ট এরিয়া */
+        #app-viewport {
+            padding: 20px;
+            padding-bottom: 110px;
+        }
+
+        .section-title { 
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: 800;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        /* কার্ডগুলো স্বচ্ছ এবং ছবির ওপর সুন্দর দেখাবে */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+
+        .card-body { padding: 12px; }
+        .card-body h4 { 
+            margin: 0; 
+            font-size: 13px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            color: #fff;
+        }
+
+        .btn-play {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-play:active { transform: scale(0.9); }
+
+        /* নিচের বাটনগুলোও ছবির ওপর থাকবে */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+
+        .nav-item { text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 12px; cursor: pointer; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+
+        .loader { text-align: center; padding: 100px 0; font-size: 18px; color: #fff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="logo-btn">Nyx<span>ora</span></div>
+        <div class="search-box">
+            <input type="text" placeholder="Nyxora নেটওয়ার্কে খুঁজুন...">
+        </div>
+    </header>
+
+    <main id="app-viewport">
+        <div id="view-title" class="section-title">Trending Reels</div>
+        <div id="content-grid" class="grid">
+            </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="navigate('reel', this)">
+            <i class="fa fa-bolt"></i><span>Reels</span>
+        </div>
+        <div class="nav-item" onclick="navigate('movie', this)">
+            <i class="fa fa-play-circle"></i><span>Movies</span>
+        </div>
+        <div class="nav-item" onclick="navigate('app', this)">
+            <i class="fa fa-download"></i><span>Apps</span>
+        </div>
+    </nav>
+
+    <script>
+        // এবার আমরা Piped API ব্যবহার করব কারণ এটি অনেক বেশি স্ট্যাবল
+        const API_URL = "https://pipedapi.kavin.rocks";
+        let secretCounter = 0;
+
+        async function navigate(type, element) {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
+
+            const grid = document.getElementById('content-grid');
+            const title = document.getElementById('view-title');
+            grid.innerHTML = '<div class="loader">ভিডিও লোড হচ্ছে...</div>';
+
+            if (type === 'reel') {
+                title.innerText = "Trending Reels";
+                fetchFromPiped('trending?region=BD'); // ট্রেন্ডিং ভিডিও
+            } else if (type === 'movie') {
+                title.innerText = "New Movie Trailers";
+                fetchFromPiped('search?q=official+movie+trailer+2026&filter=all');
+            } else if (type === 'app') {
+                title.innerText = "Premium Apps (APK)";
+                grid.innerHTML = '<p style="text-align:center; padding:50px;">Nyxora স্টোর শীঘ্রই যুক্ত করা হবে!</p>';
+            }
+        }
+
+        async function fetchFromPiped(endpoint) {
+            const grid = document.getElementById('content-grid');
+            try {
+                const response = await fetch(`${API_URL}/${endpoint}`);
+                const data = await response.json();
+                
+                // Piped API থেকে ভিডিও লিস্ট নেওয়া
+                const videos = data.relatedStreams || data.items || [];
+                
+                if (videos.length === 0) throw new Error("No data");
+
+                grid.innerHTML = ''; 
+                videos.slice(0, 12).forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <img src="${item.thumbnail}" alt="thumb">
+                        <div class="card-body">
+                            <h4>${item.title}</h4>
+                            <button class="btn-play" onclick="watch('${item.url.split('=')[1]}')">প্লে করুন</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<div class="loader">সার্ভার সংযোগে সমস্যা। কিছুক্ষণ পর আবার চেষ্টা করুন।</div>';
+            }
+        }
+
+        function watch(id) {
+            // ইউটিউব লোগো ছাড়া প্লেয়ার
+            const playerUrl = `https://piped.kavin.rocks/embed/${id}?autoplay=1`;
+            window.open(playerUrl, '_blank');
+        }
+
+        document.getElementById('logo-btn').addEventListener('click', () => {
+            secretCounter++;
+            if (secretCounter === 5) {
+                alert("Nyxora VIP এক্সেস মঞ্জুর করা হয়েছে!");
+                secretCounter = 0;
+            }
+        });
+
+        // প্রথমবার ওপেন হলে রিলস লোড হবে
+        window.onload = () => navigate('reel', document.querySelector('.nav-item'));
+    </script>
+</body>
+</html>
