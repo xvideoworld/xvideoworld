@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyxora - Premium Glass Hub</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ff0000;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text);
+            /* আপনার দেওয়া নতুন ব্যাকগ্রাউন্ড ইমেজ */
+            background: url('https://i.postimg.cc/wTyH0zsB/793589472f0a8aa6204d6900f51d9014.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* একদম স্বচ্ছ গ্লাস হেডার */
+        header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo { font-size: 28px; font-weight: 900; cursor: pointer; text-shadow: 0 0 15px rgba(255,0,0,0.5); }
+        .logo span { color: var(--primary); }
+
+        .search-box input {
+            width: 90%;
+            padding: 12px;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            color: white;
+            outline: none;
+            backdrop-filter: blur(5px);
+        }
+
+        #app-viewport {
+            padding: 15px;
+            padding-bottom: 110px;
+        }
+
+        .section-title { 
+            font-size: 22px;
+            margin: 20px 0;
+            font-weight: 800;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        /* কার্ড ডিজাইন */
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
+        }
+
+        .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+
+        .card-body { padding: 10px; }
+        .card-body h4 { 
+            margin: 0; font-size: 13px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .btn-play {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* একদম স্বচ্ছ বটম নেভিগেশন */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(25px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+
+        .nav-item { text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 12px; cursor: pointer; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+
+        .loader { text-align: center; padding: 100px 0; font-weight: bold; color: white; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="logo-btn">Nyx<span>ora</span></div>
+        <div class="search-box">
+            <input type="text" placeholder="Nyxora Cloud-এ খুঁজুন...">
+        </div>
+    </header>
+
+    <main id="app-viewport">
+        <div id="view-title" class="section-title">Trending Reels</div>
+        <div id="content-grid" class="grid"></div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="navigate('reel', this)">
+            <i class="fa fa-bolt"></i><span>Reels</span>
+        </div>
+        <div class="nav-item" onclick="navigate('movie', this)">
+            <i class="fa fa-play-circle"></i><span>Movies</span>
+        </div>
+        <div class="nav-item" onclick="navigate('app', this)">
+            <i class="fa fa-download"></i><span>Apps</span>
+        </div>
+    </nav>
+
+    <script>
+        // একাধিক সোর্স যাতে ভিডিও মিস না হয়
+        const SOURCES = [
+            "https://inv.tux.pizza/api/v1",
+            "https://invidious.projectsegfau.lt/api/v1",
+            "https://invidious.nerdvpn.de/api/v1"
+        ];
+        
+        let activeSource = SOURCES[0];
+
+        async function navigate(type, element) {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
+
+            const grid = document.getElementById('content-grid');
+            const title = document.getElementById('view-title');
+            grid.innerHTML = '<div class="loader">কানেক্ট হচ্ছে...</div>';
+
+            if (type === 'reel') {
+                title.innerText = "Trending Reels";
+                loadData('trending?type=shorts');
+            } else if (type === 'movie') {
+                title.innerText = "New Trailers";
+                loadData('search?q=official+trailers+2026');
+            } else if (type === 'app') {
+                title.innerText = "Premium Apps";
+                grid.innerHTML = '<p style="text-align:center; padding-top:50px;">শীঘ্রই আসছে!</p>';
+            }
+        }
+
+        async function loadData(endpoint) {
+            const grid = document.getElementById('content-grid');
+            let success = false;
+
+            for (let source of SOURCES) {
+                try {
+                    const res = await fetch(`${source}/${endpoint}`);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    
+                    grid.innerHTML = ''; 
+                    data.slice(0, 10).forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                            <img src="${item.videoThumbnails[0].url}" alt="thumb">
+                            <div class="card-body">
+                                <h4>${item.title}</h4>
+                                <button class="btn-play" onclick="play('${item.videoId}')">দেখুন</button>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                    activeSource = source;
+                    success = true;
+                    break;
+                } catch (e) { console.log("Trying next source..."); }
+            }
+            if (!success) grid.innerHTML = '<p class="loader">সার্ভার ব্যস্ত। আবার চেষ্টা করুন।</p>';
+        }
+
+        function play(id) {
+            const embedUrl = activeSource.replace('/api/v1', '/embed') + '/' + id + '?autoplay=1';
+            window.open(embedUrl, '_blank');
+        }
+
+        window.onload = () => navigate('reel', document.querySelector('.nav-item'));
+    </script>
+</body>
+</html>
