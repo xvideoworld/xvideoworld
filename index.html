@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nyxora Full Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+        }
+
+        /* ছবিটা পুরো স্ক্রিন জুরে থাকবে */
+        .full-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.postimg.cc/3RGD3350/a707925633db413cd7d514767ecdfa1f.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        /* হেডার এবং সার্চ বার একদম স্বচ্ছ */
+        header {
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            background: transparent;
+        }
+
+        .logo { font-size: 35px; font-weight: 900; letter-spacing: 2px; text-shadow: 2px 2px 15px rgba(0,0,0,0.7); }
+        .logo span { color: #ff0000; }
+
+        .search-container {
+            margin: 15px auto;
+            width: 85%;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            color: white;
+            outline: none;
+            font-size: 15px;
+        }
+
+        /* কন্টেন্ট এরিয়া */
+        #app-viewport { padding: 10px; padding-bottom: 100px; }
+        .section-title { font-size: 22px; margin: 15px 10px; font-weight: bold; text-shadow: 1px 1px 10px #000; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        /* কার্ড ডিজাইন */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        .card-body { padding: 10px; }
+        .card-body h4 { font-size: 12px; height: 32px; overflow: hidden; margin-bottom: 8px; }
+
+        .play-btn {
+            width: 100%;
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* বটম নেভিগেশন */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-item { color: rgba(255,255,255,0.6); text-align: center; font-size: 11px; cursor: pointer; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: #ff0000; }
+        
+        .loader { text-align: center; padding: 50px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="full-bg"></div>
+
+    <header>
+        <div class="logo">Nyx<span>ora</span></div>
+        <div class="search-container">
+            <input type="text" placeholder="Nyxora নেটওয়ার্কে খুঁজুন...">
+        </div>
+    </header>
+
+    <main id="app-viewport">
+        <h2 id="view-title" class="section-title">Trending Reels</h2>
+        <div id="content-grid" class="grid"></div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="navigate('reel', this)">
+            <i class="fa fa-bolt"></i><span>Reels</span>
+        </div>
+        <div class="nav-item" onclick="navigate('movie', this)">
+            <i class="fa fa-play-circle"></i><span>Movies</span>
+        </div>
+        <div class="nav-item" onclick="navigate('app', this)">
+            <i class="fa fa-download"></i><span>Apps</span>
+        </div>
+    </nav>
+
+    <script>
+        // ডাইরেক্ট ইউটিউব সার্চ প্রক্সি (এপিআই ছাড়াই ভিডিও আনবে)
+        async function fetchVideos(query) {
+            const grid = document.getElementById('content-grid');
+            grid.innerHTML = '<div class="loader">কানেক্ট হচ্ছে...</div>';
+            
+            try {
+                // আমরা একটি পাবলিক ইউটিউব প্রক্সি ব্যবহার করছি
+                const response = await fetch(`https://pipedapi.kavin.rocks/search?q=${query}&filter=videos`);
+                const data = await response.json();
+                
+                grid.innerHTML = '';
+                data.items.slice(0, 10).forEach(item => {
+                    const videoId = item.url.split("v=")[1];
+                    const card = `
+                        <div class="card">
+                            <img src="${item.thumbnail}" alt="thumb">
+                            <div class="card-body">
+                                <h4>${item.title}</h4>
+                                <button class="play-btn" onclick="play('${videoId}')">এখনই দেখুন</button>
+                            </div>
+                        </div>`;
+                    grid.innerHTML += card;
+                });
+            } catch (err) {
+                grid.innerHTML = '<div class="loader">সার্ভার পরিবর্তন করা হচ্ছে...</div>';
+                // ব্যাকআপ ট্রাই
+                setTimeout(() => fetchVideos(query), 2000);
+            }
+        }
+
+        function navigate(type, el) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            
+            if(type === 'reel') {
+                document.getElementById('view-title').innerText = "Trending Reels";
+                fetchVideos("shorts");
+            } else if(type === 'movie') {
+                document.getElementById('view-title').innerText = "Latest Trailers";
+                fetchVideos("new movie trailer 2026");
+            }
+        }
+
+        function play(id) {
+            window.open(`https://www.youtube.com/embed/${id}?autoplay=1`, '_blank');
+        }
+
+        window.onload = () => fetchVideos("shorts");
+    </script>
+</body>
+</html>
