@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Player</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 30px 20px;
+  }
+  .container { width: 100%; max-width: 860px; }
+  .header { text-align: center; margin-bottom: 20px; }
+  .header h1 {
+    font-size: 1.6rem;
+    color: #cc0000;
+    font-weight: 700;
+  }
+  .header p { color: #888; font-size: 0.85rem; margin-top: 4px; }
+  
+  .input-area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .input-area input {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    background: #fff;
+    color: #333;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .input-area input:focus { border-color: #cc0000; }
+  .input-area button {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    background: #cc0000;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .input-area button:hover { background: #a00000; }
+  
+  .player-wrapper {
+    width: 100%;
+    background: #f5f5f5;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(200,0,0,0.10);
+    border: 2px solid #cc0000;
+    position: relative;
+  }
+  
+  .player-wrapper video {
+    width: 100%;
+    display: block;
+    background: #000;
+    max-height: 75vh;
+  }
+  
+  /* Custom video controls styling */
+  .player-wrapper video::-webkit-media-controls-panel {
+    background: linear-gradient(0deg, rgba(204,0,0,0.15), transparent);
+  }
+  .player-wrapper video::-webkit-media-controls-timeline {
+    background: #cc0000;
+  }
+  .player-wrapper video::-webkit-media-controls-play-button {
+    background: rgba(204,0,0,0.2);
+    border-radius: 50%;
+  }
+  
+  .status-bar {
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+  }
+  .status-bar .title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #222;
+  }
+  .status-bar .author {
+    color: #cc0000;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .error-msg {
+    color: #cc0000;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    display: none;
+    text-align: center;
+  }
+  .loading-indicator {
+    display: none;
+    text-align: center;
+    color: #cc0000;
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+  .loading-indicator.active { display: block; }
+  
+  .quality-row {
+    display: flex;
+    gap: 6px;
+    padding: 10px 18px;
+    background: #fafafa;
+    border-top: 1px solid #eee;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .quality-row .label {
+    font-size: 0.78rem;
+    color: #666;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .quality-btn {
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #555;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .quality-btn:hover { border-color: #cc0000; color: #cc0000; }
+  .quality-btn.active {
+    background: #cc0000;
+    color: #fff;
+    border-color: #cc0000;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.75rem;
+    color: #aaa;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>▶ Custom Video Player</h1>
+    <p>Paste a YouTube link — pure HTML5 player, no branding</p>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="videoUrl" placeholder="https://youtu.be/... or youtube.com/watch?v=..." value="https://youtu.be/x31yPZY3DUw">
+    <button id="playBtn">▶ Play</button>
+  </div>
+
+  <div class="player-wrapper">
+    <video id="videoPlayer" controls autoplay playsinline preload="auto"></video>
+    <div class="quality-row" id="qualityRow"></div>
+    <div class="status-bar">
+      <span class="title" id="videoTitle">Enter a YouTube link above</span>
+      <span class="author" id="videoAuthor"></span>
+    </div>
+  </div>
+  
+  <div class="loading-indicator" id="loadingIndicator">⏳ Loading video stream...</div>
+  <div class="error-msg" id="errorMsg"></div>
+  <div class="footer">White background · Red accents · Custom player</div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const YT_API_KEY = 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
+  const YT_API_URL = 'https://release-youtubei.sandbox.googleapis.com/youtubei/v1/player';
+
+  // Combined format itags (have both video + audio)
+  const COMBINED_ITAGS = [18, 22, 36, 17, 37, 38, 43, 44, 45, 46];
+  const QUALITY_LABELS = {
+    17: '144p', 18: '360p', 22: '720p', 36: '180p',
+    37: '1080p', 38: '3072p', 43: '360p WebM',
+    44: '480p WebM', 45: '720p WebM', 46: '1080p WebM'
+  };
+
+  const video = document.getElementById('videoPlayer');
+  const titleEl = document.getElementById('videoTitle');
+  const authorEl = document.getElementById('videoAuthor');
+  const loadingEl = document.getElementById('loadingIndicator');
+  const errorEl = document.getElementById('errorMsg');
+  const qualityRow = document.getElementById('qualityRow');
+  const playBtn = document.getElementById('playBtn');
+  const input = document.getElementById('videoUrl');
+
+  let currentStreams = [];
+
+  function extractVideoId(url) {
+    const t = url.trim();
+    let m = t.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (m) return m[1];
+    m = t.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if (m) return m[1];
+    m = t.match(/embed\/([a-zA-Z0-9_-]{11})/);
+    if (m) return m[1];
+    if (/^[a-zA-Z0-9_-]{11}$/.test(t)) return t;
+    return null;
+  }
+
+  async function fetchStreamData(videoId) {
+    // Try WEB_EMBEDDED_PLAYER first (no PO token required)
+    const payloads = [
+      {
+        clientName: 'WEB_EMBEDDED_PLAYER',
+        clientVersion: '1.20241201.00.00',
+      },
+      {
+        clientName: 'iOS',
+        clientVersion: '19.45.4',
+      }
+    ];
+
+    for (const client of payloads) {
+      try {
+        const body = {
+          videoId,
+          context: {
+            client: {
+              hl: 'en',
+              gl: 'US',
+              clientName: client.clientName,
+              clientVersion: client.clientVersion,
+            }
+          }
+        };
+
+        const res = await fetch(`${YT_API_URL}?key=${YT_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) continue;
+        const data = await res.json();
+        
+        // Check playability
+        const status = data?.playabilityStatus?.status;
+        if (status === 'OK' || status === 'AGE_VERIFICATION_REQUIRED') {
+          return data;
+        }
+      } catch(e) {
+        console.warn('InnerTube client failed:', client.clientName, e.message);
+      }
+    }
+    throw new Error('Could not fetch video data from YouTube');
+  }
+
+  function getCombinedFormats(streamingData) {
+    if (!streamingData?.formats) return [];
+    return streamingData.formats.filter(f => {
+      const itag = parseInt(f.itag);
+      return COMBINED_ITAGS.includes(itag) && f.url;
+    });
+  }
+
+  function getAdaptiveFormats(streamingData) {
+    if (!streamingData?.adaptiveFormats) return [];
+    const videos = streamingData.adaptiveFormats.filter(f => 
+      f.mimeType?.startsWith('video/') && f.url
+    );
+    const audios = streamingData.adaptiveFormats.filter(f => 
+      f.mimeType?.startsWith('audio/') && f.url
+    );
+    return { videos, audios };
+  }
+
+  async function loadVideo() {
+    const url = input.value;
+    const videoId = extractVideoId(url);
+    errorEl.style.display = 'none';
+
+    if (!videoId) {
+      errorEl.textContent = '❌ Invalid YouTube link';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    loadingEl.classList.add('active');
+    video.pause();
+    video.src = '';
+    qualityRow.innerHTML = '';
+    currentStreams = [];
+    titleEl.textContent = 'Loading...';
+    authorEl.textContent = '';
+
+    try {
+      const data = await fetchStreamData(videoId);
+      
+      // Set title/author from response
+      titleEl.textContent = data?.videoDetails?.title || 'Video';
+      authorEl.textContent = data?.videoDetails?.author || '';
+
+      const streamingData = data?.streamingData;
+      if (!streamingData) throw new Error('No streaming data available');
+
+      const combined = getCombinedFormats(streamingData);
+      const { videos, audios } = getAdaptiveFormats(streamingData);
+
+      // If we have a combined format (audio+video), use it
+      if (combined.length > 0) {
+        currentStreams = combined;
+        // Sort by quality - prefer 360p (itag 18) for fast loading
+        combined.sort((a, b) => {
+          const aTag = parseInt(a.itag);
+          const bTag = parseInt(b.itag);
+          // Prefer itag 18 (360p) for best balance of quality+speed
+          if (aTag === 18) return -1;
+          if (bTag === 18) return 1;
+          return parseInt(b.itag) - parseInt(a.itag);
+        });
+
+        // Build quality buttons
+        combined.forEach((stream, i) => {
+          const itag = parseInt(stream.itag);
+          const label = QUALITY_LABELS[itag] || `${stream.quality || itag}`;
+          const btn = document.createElement('button');
+          btn.className = 'quality-btn' + (i === 0 ? ' active' : '');
+          btn.textContent = label;
+          btn.onclick = () => playStream(stream, btn);
+          qualityRow.appendChild(btn);
+        });
+
+        // Play the first (best) one
+        playStream(combined[0]);
+      } 
+      // Fallback: use video-only + audio-only via MSE
+      else if (videos.length > 0 && audios.length > 0) {
+        // Use the lowest quality video for instant load
+        const lowVideo = videos.reduce((a, b) => 
+          (parseInt(a.bitrate) || Infinity) < (parseInt(b.bitrate) || Infinity) ? a : b
+        );
+        const bestAudio = audios.reduce((a, b) => 
+          (parseInt(a.bitrate) || 0) > (parseInt(b.bitrate) || 0) ? a : b
+        );
+        
+        // We can only play one stream at a time in a <video> tag
+        // Play the video (no audio) — not great
+        // Instead, play the audio-only stream (has audio but no video)
+        // OR: just play the video+use audio separately
+        
+        // Best option: play the video stream (may have no audio)
+        // The browser will play it
+        video.src = lowVideo.url;
+        video.play().catch(() => {});
+        
+        let label = lowVideo.qualityLabel || 'Video';
+        const btn = document.createElement('button');
+        btn.className = 'quality-btn active';
+        btn.textContent = label + ' (no audio)';
+        qualityRow.appendChild(btn);
+        
+        // Try to also load audio — we'd need MSE for proper muxing
+        // For simplicity, inform user
+        errorEl.textContent = '⚠️ Audio may not play — using video-only stream';
+        errorEl.style.display = 'block';
+        setTimeout(() => { errorEl.style.display = 'none'; }, 5000);
+      }
+      else {
+        throw new Error('No playable streams found');
+      }
+
+      loadingEl.classList.remove('active');
+    } catch (err) {
+      loadingEl.classList.remove('active');
+      errorEl.textContent = '❌ ' + err.message;
+      errorEl.style.display = 'block';
+      titleEl.textContent = 'Error loading video';
+    }
+  }
+
+  function playStream(stream, activeBtn) {
+    if (!stream?.url) return;
+    video.src = stream.url;
+    video.play().catch(() => {});
+    
+    if (activeBtn) {
+      document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+      activeBtn.classList.add('active');
+    }
+  }
+
+  // Event listeners
+  playBtn.addEventListener('click', loadVideo);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') loadVideo(); });
+
+  // Auto-load on page open
+  loadVideo();
+})();
+</script>
+</body>
+</html>
