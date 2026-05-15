@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Movie App UI</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background:#ffffff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.phone{
+    width:360px;
+    height:720px;
+    border:4px solid #000;
+    border-radius:30px;
+    overflow:hidden;
+    background:#fff;
+    position:relative;
+}
+
+/* TOP BAR */
+
+.topbar{
+    height:70px;
+    border-bottom:2px solid #000;
+    display:flex;
+    align-items:center;
+    padding:10px;
+    gap:10px;
+}
+
+.menu-btn{
+    width:40px;
+    height:40px;
+    background:red;
+    border-radius:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.search-box{
+    flex:1;
+    height:40px;
+    border:2px solid #000;
+    border-radius:10px;
+    padding-left:10px;
+    outline:none;
+}
+
+/* SIDE BUTTONS */
+
+.side-buttons{
+    position:absolute;
+    top:90px;
+    left:10px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.side-buttons button{
+    width:45px;
+    height:45px;
+    border:none;
+    border-radius:50%;
+    background:red;
+    color:#fff;
+    font-size:18px;
+    cursor:pointer;
+}
+
+/* CONTENT */
+
+.content{
+    margin-left:70px;
+    padding:20px 15px 100px;
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+.card{
+    width:100%;
+    height:150px;
+    background:#f3f3f3;
+    border:3px solid #000;
+    border-radius:15px;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:70px;
+    border-top:2px solid #000;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    background:#fff;
+}
+
+.bottom-nav button{
+    width:55px;
+    height:55px;
+    border:none;
+    border-radius:15px;
+    background:red;
+    color:#fff;
+    font-size:20px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+    <!-- TOP -->
+    <div class="topbar">
+        <div class="menu-btn">≡</div>
+        <input type="text" class="search-box" placeholder="Search..." />
+    </div>
+
+    <!-- LEFT BUTTONS -->
+    <div class="side-buttons">
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>5</button>
+        <button>6</button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="bottom-nav">
+        <button>⌂</button>
+        <button>★</button>
+        <button>⚙</button>
+    </div>
+
+</div>
+
+</body>
+</html>
