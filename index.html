@@ -1,83 +1,76 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Movie App UI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Website</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family: Arial, sans-serif;
+    font-family:Arial, sans-serif;
 }
 
 body{
     background:#ffffff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
+    color:#000;
 }
 
-.phone{
-    width:360px;
-    height:720px;
-    border:4px solid #000;
-    border-radius:30px;
-    overflow:hidden;
-    background:#fff;
-    position:relative;
-}
+/* HEADER */
 
-/* TOP BAR */
-
-.topbar{
+header{
+    width:100%;
     height:70px;
     border-bottom:2px solid #000;
     display:flex;
     align-items:center;
-    padding:10px;
-    gap:10px;
+    justify-content:space-between;
+    padding:0 15px;
+    position:fixed;
+    top:0;
+    background:#fff;
+    z-index:1000;
 }
 
-.menu-btn{
-    width:40px;
-    height:40px;
-    background:red;
-    border-radius:10px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:#fff;
-    font-size:22px;
+.logo{
+    font-size:28px;
     font-weight:bold;
+    color:red;
 }
 
 .search-box{
-    flex:1;
-    height:40px;
+    width:60%;
+    height:42px;
     border:2px solid #000;
-    border-radius:10px;
-    padding-left:10px;
+    border-radius:12px;
+    padding-left:12px;
     outline:none;
+    font-size:16px;
 }
 
-/* SIDE BUTTONS */
+/* SIDEBAR */
 
-.side-buttons{
-    position:absolute;
-    top:90px;
-    left:10px;
+.sidebar{
+    width:70px;
+    height:100vh;
+    border-right:2px solid #000;
+    position:fixed;
+    top:70px;
+    left:0;
+    background:#fff;
     display:flex;
     flex-direction:column;
-    gap:12px;
+    align-items:center;
+    padding-top:20px;
+    gap:18px;
 }
 
-.side-buttons button{
-    width:45px;
-    height:45px;
+.sidebar button{
+    width:48px;
+    height:48px;
     border:none;
     border-radius:50%;
     background:red;
@@ -86,85 +79,213 @@ body{
     cursor:pointer;
 }
 
-/* CONTENT */
+/* MAIN */
 
-.content{
+main{
     margin-left:70px;
-    padding:20px 15px 100px;
-    display:flex;
-    flex-direction:column;
+    margin-top:90px;
+    padding:20px;
+}
+
+/* VIDEO CARDS */
+
+.video-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
     gap:25px;
 }
 
-.card{
+.video-card{
+    border:2px solid #000;
+    border-radius:18px;
+    overflow:hidden;
+    background:#fff;
+    transition:0.3s;
+}
+
+.video-card:hover{
+    transform:scale(1.02);
+}
+
+.video{
     width:100%;
-    height:150px;
-    background:#f3f3f3;
-    border:3px solid #000;
-    border-radius:15px;
+    height:180px;
+    background:#ddd;
+}
+
+.video iframe{
+    width:100%;
+    height:100%;
+    border:none;
+}
+
+.video-info{
+    padding:12px;
+}
+
+.video-title{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.video-text{
+    font-size:14px;
+    color:#444;
 }
 
 /* BOTTOM NAV */
 
 .bottom-nav{
-    position:absolute;
-    bottom:0;
-    left:0;
     width:100%;
     height:70px;
+    position:fixed;
+    bottom:0;
+    left:0;
+    background:#fff;
     border-top:2px solid #000;
     display:flex;
-    justify-content:space-around;
+    justify-content:center;
     align-items:center;
-    background:#fff;
+    gap:30px;
 }
 
 .bottom-nav button{
     width:55px;
     height:55px;
     border:none;
-    border-radius:15px;
+    border-radius:14px;
     background:red;
     color:#fff;
     font-size:20px;
     cursor:pointer;
 }
+
 </style>
 </head>
-
 <body>
 
-<div class="phone">
+<!-- HEADER -->
 
-    <!-- TOP -->
-    <div class="topbar">
-        <div class="menu-btn">≡</div>
-        <input type="text" class="search-box" placeholder="Search..." />
+<header>
+
+    <div class="logo">VIDEO</div>
+
+    <input type="text" class="search-box" placeholder="Search videos...">
+
+</header>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+    <button>🏠</button>
+    <button>🎬</button>
+    <button>🔥</button>
+    <button>⭐</button>
+    <button>⚙</button>
+
+</div>
+
+<!-- MAIN -->
+
+<main>
+
+<div class="video-grid">
+
+    <!-- VIDEO 1 -->
+
+    <div class="video-card">
+
+        <div class="video">
+
+            <iframe 
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            allowfullscreen>
+            </iframe>
+
+        </div>
+
+        <div class="video-info">
+
+            <div class="video-title">
+                Awesome Video
+            </div>
+
+            <div class="video-text">
+                এখানে ভিডিওর ডেসক্রিপশন থাকবে।
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- LEFT BUTTONS -->
-    <div class="side-buttons">
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>4</button>
-        <button>5</button>
-        <button>6</button>
+    <!-- VIDEO 2 -->
+
+    <div class="video-card">
+
+        <div class="video">
+
+            <iframe 
+            src="https://www.youtube.com/embed/ysz5S6PUM-U"
+            allowfullscreen>
+            </iframe>
+
+        </div>
+
+        <div class="video-info">
+
+            <div class="video-title">
+                New Movie Trailer
+            </div>
+
+            <div class="video-text">
+                এখানে ভিডিওর ডেসক্রিপশন থাকবে।
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
-        <div class="card"></div>
-        <div class="card"></div>
-        <div class="card"></div>
+    <!-- VIDEO 3 -->
+
+    <div class="video-card">
+
+        <div class="video">
+
+            <iframe 
+            src="https://www.youtube.com/embed/tgbNymZ7vqY"
+            allowfullscreen>
+            </iframe>
+
+        </div>
+
+        <div class="video-info">
+
+            <div class="video-title">
+                Trending Video
+            </div>
+
+            <div class="video-text">
+                এখানে ভিডিওর ডেসক্রিপশন থাকবে।
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- BOTTOM -->
-    <div class="bottom-nav">
-        <button>⌂</button>
-        <button>★</button>
-        <button>⚙</button>
-    </div>
+</div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+    <button>🏠</button>
+    <button>🔍</button>
+    <button>❤️</button>
+    <button>👤</button>
 
 </div>
 
