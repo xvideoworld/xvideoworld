@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineVerse</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            color: #1a1a2e;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== RED RAIN PARTICLES ===== */
+        .red-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, #e63946, #c1121f);
+            opacity: 0.6;
+            animation: rainFall linear infinite;
+        }
+
+        @keyframes rainFall {
+            0% { transform: translateY(-20px) scaleX(1); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(100vh) scaleX(0.5); opacity: 0; }
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #c1121f;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: #1a1a2e;
+            font-weight: 300;
+        }
+
+        .logo .dot {
+            width: 8px;
+            height: 8px;
+            background: #e63946;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        nav a {
+            color: #4a4a6a;
+            text-decoration: none;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        nav a:hover, nav a.active {
+            background: #c1121f;
+            color: #fff;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center;
+            padding: 70px 20px 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #1a1a2e;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 .highlight {
+            color: #c1121f;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #6a6a8a;
+            max-width: 550px;
+            margin: 0 auto 30px;
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        .hero .search-box {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #f5f5fa;
+            border-radius: 14px;
+            padding: 4px;
+            border: 1px solid #e8e8f0;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero .search-box input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            outline: none;
+            color: #1a1a2e;
+        }
+
+        .hero .search-box input::placeholder {
+            color: #9a9ab0;
+        }
+
+        .hero .search-box button {
+            padding: 12px 28px;
+            background: #c1121f;
+            color: #fff;
+            border: none;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .hero .search-box button:hover {
+            background: #a00d18;
+            transform: scale(1.02);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SECTION TABS ===== */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #f0f0f8;
+            color: #4a4a6a;
+        }
+
+        .tab-btn:hover {
+            background: #e4e4f0;
+        }
+
+        .tab-btn.active {
+            background: #c1121f;
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(193, 18, 31, 0.25);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== SECTION ===== */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .section-header .badge {
+            background: #c1121f;
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .section-header .see-all {
+            color: #c1121f;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .section-header .see-all:hover {
+            color: #a00d18;
+        }
+
+        /* ===== MOVIE GRID ===== */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1100px) {
+            .movie-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .movie-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== MOVIE CARD ===== */
+        .movie-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: 0.4s;
+            cursor: pointer;
+            border: 1px solid #e8e8f0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(193, 18, 31, 0.12);
+            border-color: rgba(193, 18, 31, 0.2);
+        }
+
+        .movie-card .thumb {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+        .movie-card:hover .thumb img {
+            transform: scale(1.05);
+        }
+
+        .movie-card .thumb .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .movie-card:hover .thumb .overlay {
+            opacity: 1;
+        }
+
+        .movie-card .thumb .play-icon {
+            width: 54px;
+            height: 54px;
+            background: rgba(193, 18, 31, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            transform: scale(0.8);
+            transition: 0.3s;
+        }
+
+        .movie-card:hover .thumb .play-icon {
+            transform: scale(1);
+        }
+
+        .movie-card .thumb .badge-top {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #c1121f;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .movie-card .thumb .badge-hd {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .movie-card .info {
+            padding: 16px 18px 18px;
+        }
+
+        .movie-card .info .title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-card .info .meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #8a8aaa;
+            margin-bottom: 10px;
+        }
+
+        .movie-card .info .meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .movie-card .info .rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .movie-card .info .rating .stars {
+            color: #f4a261;
+            font-size: 13px;
+        }
+
+        .movie-card .info .rating .score {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a4a6a;
+        }
+
+        .movie-card .info .watch-btn {
+            width: 100%;
+            padding: 10px;
+            background: #c1121f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .movie-card .info .watch-btn:hover {
+            background: #a00d18;
+        }
+
+        /* ===== APK CARD ===== */
+        .apk-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1100px) {
+            .apk-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .apk-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .apk-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e8e8f0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            transition: 0.4s;
+            animation: fadeInUp 0.5s ease both;
+            cursor: pointer;
+        }
+
+        .apk-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(193, 18, 31, 0.1);
+            border-color: rgba(193, 18, 31, 0.2);
+        }
+
+        .apk-card .icon-area {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+            font-size: 56px;
+        }
+
+        .apk-card .info {
+            padding: 16px 18px 18px;
+        }
+
+        .apk-card .info .name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .apk-card .info .meta {
+            font-size: 12px;
+            color: #8a8aaa;
+            margin-bottom: 10px;
+        }
+
+        .apk-card .info .download-btn {
+            width: 100%;
+            padding: 10px;
+            background: #c1121f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .apk-card .info .download-btn:hover {
+            background: #a00d18;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            max-width: 900px;
+            width: 92%;
+            max-height: 90vh;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+        }
+
+        .modal-content video {
+            width: 100%;
+            max-height: 80vh;
+            display: block;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 42px;
+            height: 42px;
+            background: rgba(193, 18, 31, 0.8);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: #c1121f;
+            transform: scale(1.1);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #e8e8f0;
+            color: #8a8aaa;
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 12px;
+        }
+
+        footer .links a {
+            color: #4a4a6a;
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        footer .links a:hover {
+            color: #c1121f;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f5f5fa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1121f;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a00d18;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header {
+                padding: 14px 20px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .container {
+                padding: 0 16px 40px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== RED RAIN ===== -->
+    <div class="red-rain" id="redRain"></div>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="logo">
+            Cine<span>Verse</span>
+            <span class="dot"></span>
+        </div>
+        <nav>
+            <a href="#" class="active" data-tab="movies">🎬 Movies</a>
+            <a href="#" data-tab="apk">📦 APKs</a>
+            <a href="#" data-tab="trending">🔥 Trending</a>
+        </nav>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <h1>Watch <span class="highlight">Free Movies</span> Online</h1>
+        <p>Stream the latest movies and download Android APKs — all in one place.</p>
+        <div class="search-box">
+            <input type="text" placeholder="Search movies, APKs..." />
+            <button>🔍 Search</button>
+        </div>
+    </section>
+
+    <!-- ===== TABS ===== -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="movies">🎬 All Movies</button>
+        <button class="tab-btn" data-tab="apk">📦 Android APKs</button>
+        <button class="tab-btn" data-tab="trending">🔥 Trending</button>
+    </div>
+
+    <!-- ===== MAIN CONTAINER ===== -->
+    <div class="container">
+
+        <!-- ===== MOVIES SECTION ===== -->
+        <div class="section active" id="section-movies">
+            <div class="section-header">
+                <h2>🎬 Latest Movies</h2>
+                <a href="#" class="see-all">See All →</a>
+            </div>
+            <div class="movie-grid" id="movieGrid"></div>
+        </div>
+
+        <!-- ===== APK SECTION ===== -->
+        <div class="section" id="section-apk">
+            <div class="section-header">
+                <h2>📦 Android APKs</h2>
+                <span class="badge">4 Apps</span>
+            </div>
+            <div class="apk-grid" id="apkGrid"></div>
+        </div>
+
+        <!-- ===== TRENDING SECTION ===== -->
+        <div class="section" id="section-trending">
+            <div class="section-header">
+                <h2>🔥 Trending Now</h2>
+                <a href="#" class="see-all">See All →</a>
+            </div>
+            <div class="movie-grid" id="trendingGrid"></div>
+        </div>
+
+    </div>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <video id="modalVideo" controls autoplay></video>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">DMCA</a>
+            <a href="#">Contact</a>
+        </div>
+        <p>© 2026 CineVerse. All rights reserved. 🎬</p>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ===== RED RAIN =====
+        (function createRedRain() {
+            const container = document.getElementById('redRain');
+            const count = 80;
+            for (let i = 0; i < count; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'raindrop';
+                const size = Math.random() * 3 + 1;
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.width = size + 'px';
+                drop.style.height = (Math.random() * 60 + 40) + 'px';
+                drop.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                drop.style.animationDelay = (Math.random() * 3) + 's';
+                drop.style.opacity = Math.random() * 0.5 + 0.2;
+                container.appendChild(drop);
+            }
+        })();
+
+        // ===== MOVIE DATABASE (4 movies per category) =====
+        const movies = [
+            { id: 1, title: 'Deadpool & Wolverine', year: '2024', rating: 8.2, genre: 'Action/Comedy', hd: true, top: true, thumb: 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg' },
+            { id: 2, title: 'Dune: Part Two', year: '2024', rating: 8.9, genre: 'Sci-Fi/Adventure', hd: true, top: true, thumb: 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg' },
+            { id: 3, title: 'Godzilla x Kong', year: '2024', rating: 7.6, genre: 'Action/Sci-Fi', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/pG3q5AI2MxBsPJFh3AK2Wut4MfU.jpg' },
+            { id: 4, title: 'Inside Out 2', year: '2024', rating: 8.1, genre: 'Animation/Family', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvNR7v7l3LQ.jpg' },
+            { id: 5, title: 'The Fall Guy', year: '2024', rating: 7.4, genre: 'Action/Comedy', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/tSz1qsmS3zDqdK4O0R7x1IMNx4x.jpg' },
+            { id: 6, title: 'Kingdom of Apes', year: '2024', rating: 7.9, genre: 'Sci-Fi/Action', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/gKkl37BQuKTanygYQG1pyYgLVgf.jpg' },
+            { id: 7, title: 'Furiosa', year: '2024', rating: 8.0, genre: 'Action/Adventure', hd: true, top: true, thumb: 'https://image.tmdb.org/t/p/w500/iADOJ8Zym75x2UodC2BASeFLeA0.jpg' },
+            { id: 8, title: 'Bad Boys 4', year: '2024', rating: 7.3, genre: 'Action/Comedy', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/9PqD3wSIjD1Tb7FDXMbRwKbocZx.jpg' },
+            { id: 9, title: 'The Garfield Movie', year: '2024', rating: 7.1, genre: 'Animation/Comedy', hd: false, top: false, thumb: 'https://image.tmdb.org/t/p/w500/p6AbOJvMQhBmffdDIDd6kX2Dr2.jpg' },
+            { id: 10, title: 'Civil War', year: '2024', rating: 7.8, genre: 'Action/Drama', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/huTNAbt02Dx51O0UTUGkObKTJzy.jpg' },
+            { id: 11, title: 'Abigail', year: '2024', rating: 7.2, genre: 'Horror/Thriller', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/5g2n2hKj0VKUJwHd5ExFvR4wC4c.jpg' },
+            { id: 12, title: 'IF', year: '2024', rating: 7.5, genre: 'Family/Fantasy', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/mo7LLzd1ETlsyxYfI4U8Oq7GGn0.jpg' }
+        ];
+
+        const trendingMovies = [
+            { id: 13, title: 'Deadpool & Wolverine', year: '2024', rating: 8.2, genre: 'Action/Comedy', hd: true, top: true, thumb: 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg' },
+            { id: 14, title: 'Dune: Part Two', year: '2024', rating: 8.9, genre: 'Sci-Fi', hd: true, top: true, thumb: 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg' },
+            { id: 15, title: 'Furiosa', year: '2024', rating: 8.0, genre: 'Action', hd: true, top: true, thumb: 'https://image.tmdb.org/t/p/w500/iADOJ8Zym75x2UodC2BASeFLeA0.jpg' },
+            { id: 16, title: 'Godzilla x Kong', year: '2024', rating: 7.6, genre: 'Sci-Fi', hd: true, top: false, thumb: 'https://image.tmdb.org/t/p/w500/pG3q5AI2MxBsPJFh3AK2Wut4MfU.jpg' }
+        ];
+
+        const apks = [
+            { id: 1, name: 'Netflix Premium v8.12', size: '24 MB', ver: '8.12.0', icon: '📺' },
+            { id: 2, name: 'Spotify Mod v9.0', size: '18 MB', ver: '9.0.2', icon: '🎵' },
+            { id: 3, name: 'MX Player Pro', size: '32 MB', ver: '1.62.0', icon: '🎬' },
+            { id: 4, name: 'YouTube Vanced', size: '28 MB', ver: '19.08.34', icon: '▶️' }
+        ];
+
+        // ===== RENDER MOVIES =====
+        function renderMovies(containerId, data) {
+            const grid = document.getElementById(containerId);
+            grid.innerHTML = '';
+
+            data.forEach((movie, index) => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.style.animationDelay = (index * 0.06) + 's';
+
+                card.innerHTML = `
+                    <div class="thumb">
+                        <img src="${movie.thumb}" alt="${movie.title}" loading="lazy" onerror="this.style.display='none';this.parentNode.innerHTML='🎬'" />
+                        ${movie.top ? '<div class="badge-top">🔥 Top</div>' : ''}
+                        ${movie.hd ? '<div class="badge-hd">HD</div>' : ''}
+                        <div class="overlay">
+                            <div class="play-icon">▶</div>
+                        </div>
+                    </div>
+                    <div class="info">
+                        <div class="title">${movie.title}</div>
+                        <div class="meta">
+                            <span>📅 ${movie.year}</span>
+                            <span>🎭 ${movie.genre}</span>
+                        </div>
+                        <div class="rating">
+                            <span class="stars">⭐⭐⭐⭐${movie.rating % 1 >= 0.5 ? '⭐' : ''}</span>
+                            <span class="score">${movie.rating}/10</span>
+                        </div>
+                        <button class="watch-btn" onclick="playMovie('${movie.title}')">▶ Watch Now</button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ===== RENDER APKS =====
+        function renderApks() {
+            const grid = document.getElementById('apkGrid');
+            grid.innerHTML = '';
+
+            apks.forEach((apk, index) => {
+                const card = document.createElement('div');
+                card.className = 'apk-card';
+                card.style.animationDelay = (index * 0.06) + 's';
+
+                card.innerHTML = `
+                    <div class="icon-area">${apk.icon}</div>
+                    <div class="info">
+                        <div class="name">${apk.name}</div>
+                        <div class="meta">📦 ${apk.size} • v${apk.ver}</div>
+                        <button class="download-btn" onclick="downloadApk('${apk.name}')">⬇ Download APK</button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ===== PLAY MOVIE =====
+        window.playMovie = function(title) {
+            const modal = document.getElementById('modal');
+            const video = document.getElementById('modalVideo');
+
+            // Demo video — replace with actual video URL in production
+            video.src = 'https://www.w3schools.com/html/mov_bbb.mp4';
+            modal.classList.add('active');
+        };
+
+        // ===== DOWNLOAD APK =====
+        window.downloadApk = function(name) {
+            alert(`📦 Downloading ${name}...\n(Placeholder — add actual APK URL)`);
+        };
+
+        // ===== MODAL CONTROLS =====
+        const modal = document.getElementById('modal');
+        const modalClose = document.getElementById('modalClose');
+        const modalVideo = document.getElementById('modalVideo');
+
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+        function closeModal() {
+            modal.classList.remove('active');
+            modalVideo.pause();
+            modalVideo.src = '';
+        }
+
+        // ===== TAB SWITCHING =====
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const navLinks = document.querySelectorAll('nav a');
+        const sections = {
+            movies: document.getElementById('section-movies'),
+            apk: document.getElementById('section-apk'),
+            trending: document.getElementById('section-trending')
+        };
+
+        function switchTab(tabName) {
+            // Hide all sections
+            Object.values(sections).forEach(s => s.classList.remove('active'));
+
+            // Show target section
+            if (sections[tabName]) {
+                sections[tabName].classList.add('active');
+            }
+
+            // Update tab buttons
+            tabBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tabName);
+            });
+
+            // Update nav links
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.tab === tabName);
+            });
+        }
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchTab(link.dataset.tab);
+            });
+        });
+
+        // ===== INIT =====
+        renderMovies('movieGrid', movies);
+        renderMovies('trendingGrid', trendingMovies);
+        renderApks();
+
+        console.log('🎬 CineVerse loaded — Enjoy watching!');
+    </script>
+
+</body>
+</html>
