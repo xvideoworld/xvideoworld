@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineVerse - Watch Free Movies</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            color: #1a1a2e;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== RED RAIN (SMALL, SLOW) ===== */
+        .red-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 1.5px;
+            background: linear-gradient(180deg, transparent, #e63946);
+            opacity: 0.35;
+            animation: rainFall linear infinite;
+        }
+
+        @keyframes rainFall {
+            0% { transform: translateY(-30px); opacity: 0; }
+            15% { opacity: 0.35; }
+            85% { opacity: 0.25; }
+            100% { transform: translateY(105vh); opacity: 0; }
+        }
+
+        /* ===== LOGIN MODAL ===== */
+        .login-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .login-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .login-box {
+            background: #fff;
+            border-radius: 24px;
+            padding: 50px 40px 40px;
+            width: 420px;
+            max-width: 92%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .login-box .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            background: #f0f0f8;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #4a4a6a;
+        }
+
+        .login-box .close-btn:hover {
+            background: #e63946;
+            color: #fff;
+        }
+
+        .login-box .logo-sm {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #c1121f;
+            margin-bottom: 4px;
+        }
+
+        .login-box .logo-sm span {
+            color: #1a1a2e;
+            font-weight: 300;
+        }
+
+        .login-box .subtitle {
+            text-align: center;
+            color: #8a8aaa;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .login-box .field {
+            margin-bottom: 18px;
+        }
+
+        .login-box .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a4a6a;
+            margin-bottom: 6px;
+        }
+
+        .login-box .field input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e8e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+            background: #fafaff;
+        }
+
+        .login-box .field input:focus {
+            border-color: #c1121f;
+            background: #fff;
+        }
+
+        .login-box .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #c1121f;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 6px;
+        }
+
+        .login-box .login-btn:hover {
+            background: #a00d18;
+            transform: scale(1.01);
+        }
+
+        .login-box .extra {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .login-box .extra a {
+            color: #c1121f;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-box .extra a:hover {
+            text-decoration: underline;
+        }
+
+        .login-box .divider {
+            text-align: center;
+            margin: 20px 0 16px;
+            color: #b0b0c8;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .login-box .divider::before,
+        .login-box .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 42%;
+            height: 1px;
+            background: #e8e8f0;
+        }
+
+        .login-box .divider::before { left: 0; }
+        .login-box .divider::after { right: 0; }
+
+        .login-box .social-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .login-box .social-btns button {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e8e8f0;
+            border-radius: 12px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+            color: #4a4a6a;
+        }
+
+        .login-box .social-btns button:hover {
+            background: #f5f5fa;
+            border-color: #c1121f;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #c1121f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: #1a1a2e;
+            font-weight: 300;
+        }
+
+        .logo .dot {
+            width: 7px;
+            height: 7px;
+            background: #e63946;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.4); }
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-right .login-trigger {
+            padding: 10px 24px;
+            background: #c1121f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .header-right .login-trigger:hover {
+            background: #a00d18;
+        }
+
+        .header-right .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #c1121f;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #1a1a2e;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 .highlight {
+            color: #c1121f;
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: #6a6a8a;
+            max-width: 500px;
+            margin: 0 auto 24px;
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== VIDEO PLAYER SECTION (TOP) ===== */
+        .featured-section {
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease 0.15s both;
+        }
+
+        .featured-section .section-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .featured-section .section-label h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .featured-section .section-label .live-badge {
+            background: #c1121f;
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        .video-frame {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+            border: 1px solid #e8e8f0;
+            aspect-ratio: 16 / 9;
+            background: #f5f5fa;
+        }
+
+        .video-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== SECTION ===== */
+        .section {
+            display: none;
+            margin-top: 0;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .section-header .see-all {
+            color: #c1121f;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .section-header .see-all:hover {
+            color: #a00d18;
+        }
+
+        /* ===== MOVIE GRID ===== */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1100px) {
+            .movie-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .movie-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ===== MOVIE CARD ===== */
+        .movie-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: 0.4s;
+            cursor: pointer;
+            border: 1px solid #eeeef5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 45px rgba(193, 18, 31, 0.10);
+            border-color: rgba(193, 18, 31, 0.15);
+        }
+
+        .movie-card .thumb {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+        .movie-card:hover .thumb img {
+            transform: scale(1.06);
+        }
+
+        .movie-card .thumb .overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .movie-card:hover .thumb .overlay {
+            opacity: 1;
+        }
+
+        .movie-card .thumb .play-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(193, 18, 31, 0.85);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            transform: scale(0.8);
+            transition: 0.3s;
+        }
+
+        .movie-card:hover .thumb .play-icon {
+            transform: scale(1);
+        }
+
+        .movie-card .info {
+            padding: 14px 16px 16px;
+        }
+
+        .movie-card .info .title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-card .info .meta {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            color: #8a8aaa;
+            margin-bottom: 8px;
+        }
+
+        .movie-card .info .meta span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .movie-card .info .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .movie-card .info .rating .stars {
+            color: #f4a261;
+            font-size: 12px;
+        }
+
+        .movie-card .info .rating .score {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a4a6a;
+        }
+
+        .movie-card .info .watch-btn {
+            width: 100%;
+            padding: 9px;
+            background: #c1121f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .movie-card .info .watch-btn:hover {
+            background: #a00d18;
+        }
+
+        /* ===== TRENDING BADGE ===== */
+        .trending-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #c1121f;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .hd-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* ===== FOOTER SECTIONS ===== */
+        .bottom-sections {
+            margin-top: 10px;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 11px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #f0f0f8;
+            color: #4a4a6a;
+        }
+
+        .tab-btn:hover {
+            background: #e4e4f0;
+        }
+
+        .tab-btn.active {
+            background: #c1121f;
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(193, 18, 31, 0.2);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 36px 20px 28px;
+            border-top: 1px solid #e8e8f0;
+            color: #8a8aaa;
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255,255,255,0.9);
+            margin-top: 20px;
+        }
+
+        footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        footer .links a {
+            color: #4a4a6a;
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        footer .links a:hover {
+            color: #c1121f;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 7px; }
+        ::-webkit-scrollbar-track { background: #f5f5fa; }
+        ::-webkit-scrollbar-thumb { background: #c1121f; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a00d18; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header {
+                padding: 14px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .hero h1 { font-size: 30px; }
+            .container { padding: 0 16px 30px; }
+            .login-box { padding: 36px 24px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== RED RAIN ===== -->
+    <div class="red-rain" id="redRain"></div>
+
+    <!-- ===== LOGIN MODAL ===== -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <button class="close-btn" id="loginClose">&times;</button>
+            <div class="logo-sm">Cine<span>Verse</span></div>
+            <div class="subtitle">Sign in to start watching</div>
+
+            <div class="field">
+                <label>Email or Username</label>
+                <input type="text" placeholder="Enter your email" />
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" placeholder="Enter your password" />
+            </div>
+            <button class="login-btn" onclick="handleLogin()">Sign In</button>
+
+            <div class="extra">
+                <label><input type="checkbox" /> Remember me</label>
+                <a href="#">Forgot password?</a>
+            </div>
+
+            <div class="divider">or continue with</div>
+
+            <div class="social-btns">
+                <button>🔵 Google</button>
+                <button>⚫ GitHub</button>
+            </div>
+
+            <div class="extra" style="justify-content:center; margin-top:18px;">
+                <span style="color:#8a8aaa;">Don't have an account?</span>
+                <a href="#" style="margin-left:6px;">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="logo">
+            Cine<span>Verse</span>
+            <span class="dot"></span>
+        </div>
+        <div class="header-right">
+            <button class="login-trigger" id="loginTrigger">🔑 Sign In</button>
+            <div class="user-avatar" id="userAvatar">U</div>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <h1>Watch <span class="highlight">Free Movies</span> Online</h1>
+        <p>Stream the latest Hindi, English & South Indian blockbusters in HD quality.</p>
+    </section>
+
+    <!-- ===== MAIN CONTAINER ===== -->
+    <div class="container">
+
+        <!-- ===== FEATURED VIDEO (YouTube embed - no credit) ===== -->
+        <div class="featured-section">
+            <div class="section-label">
+                <h2>🎬 Featured Movie</h2>
+                <span class="live-badge">● NOW STREAMING</span>
+            </div>
+            <div class="video-frame">
+                <iframe src="https://www.youtube.com/embed/JW3OZUz43nk?autoplay=1&mute=1&controls=1&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- ===== TABS ===== -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="movies">🎬 All Movies</button>
+            <button class="tab-btn" data-tab="trending">🔥 Trending</button>
+            <button class="tab-btn" data-tab="apk">📦 APKs</button>
+        </div>
+
+        <!-- ===== BOTTOM SECTIONS ===== -->
+        <div class="bottom-sections">
+
+            <!-- ===== MOVIES SECTION ===== -->
+            <div class="section active" id="section-movies">
+                <div class="section-header">
+                    <h2>🎬 Latest Movies</h2>
+                    <a href="#" class="see-all">See All →</a>
+                </div>
+                <div class="movie-grid" id="movieGrid"></div>
+            </div>
+
+            <!-- ===== TRENDING SECTION ===== -->
+            <div class="section" id="section-trending">
+                <div class="section-header">
+                    <h2>🔥 Trending Now</h2>
+                    <a href="#" class="see-all">See All →</a>
+                </div>
+                <div class="movie-grid" id="trendingGrid"></div>
+            </div>
+
+            <!-- ===== APK SECTION ===== -->
+            <div class="section" id="section-apk">
+                <div class="section-header">
+                    <h2>📦 Android APKs</h2>
+                    <a href="#" class="see-all">See All →</a>
+                </div>
+                <div class="apk-grid" id="apkGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;"></div>
+            </div>
+
+        </div><!-- /bottom-sections -->
+
+    </div><!-- /container -->
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">DMCA</a>
+            <a href="#">Contact</a>
+        </div>
+        <p>© 2026 CineVerse. All rights reserved.</p>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ===== RED RAIN (Small, Slow) =====
+        (function createRedRain() {
+            const container = document.getElementById('redRain');
+            const count = 55;
+            for (let i = 0; i < count; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'raindrop';
+                const size = Math.random() * 1.2 + 0.8;
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.width = size + 'px';
+                drop.style.height = (Math.random() * 35 + 20) + 'px';
+                drop.style.animationDuration = (Math.random() * 4 + 3.5) + 's';
+                drop.style.animationDelay = (Math.random() * 5) + 's';
+                drop.style.opacity = Math.random() * 0.25 + 0.12;
+                container.appendChild(drop);
+            }
+        })();
+
+        // ===== LOGIN SYSTEM =====
+        const loginOverlay = document.getElementById('loginOverlay');
+        const loginTrigger = document.getElementById('loginTrigger');
+        const loginClose = document.getElementById('loginClose');
+
+        loginTrigger.addEventListener('click', () => {
+            loginOverlay.classList.add('active');
+        });
+
+        loginClose.addEventListener('click', () => {
+            loginOverlay.classList.remove('active');
+        });
+
+        loginOverlay.addEventListener('click', (e) => {
+            if (e.target === loginOverlay) {
+                loginOverlay.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') loginOverlay.classList.remove('active');
+        });
+
+        window.handleLogin = function() {
+            alert('✅ Welcome to CineVerse! (Demo Login)');
+            loginOverlay.classList.remove('active');
+            loginTrigger.style.display = 'none';
+            document.getElementById('userAvatar').style.display = 'flex';
+        };
+
+        // ===== MOVIE DATABASE (4 thumbnails from your links) =====
+        const movies = [
+            { id: 1, title: 'AAKHRI SAWAL (2026)', year: '2026', rating: 8.4, genre: 'Action/Thriller', hd: true, top: true, thumb: 'https://i.postimg.cc/7YRTfCLW/aebedea565116005359ffa4b29344622.jpg' },
+            { id: 2, title: 'HEROPANTI 2 (2026)', year: '2026', rating: 7.9, genre: 'Action/Romance', hd: true, top: true, thumb: 'https://i.postimg.cc/B6JjdHhs/cc85501c88788a33530cbf963ff1bb55.jpg' },
+            { id: 3, title: 'CHANAKYA (2026)', year: '2026', rating: 8.1, genre: 'Action/Drama', hd: true, top: false, thumb: 'https://i.postimg.cc/DySSk2cx/8badd3a6b6f9c2f1e7f223a741ac1f99.jpg' },
+            { id: 4, title: 'BETABIYAN (2026)', year: '2026', rating: 7.6, genre: 'Romantic/Thriller', hd: true, top: false, thumb: 'https://i.postimg.cc/0N0Qdr9Z/04e26bb704624412690bb03682f3489d.jpg' }
+        ];
+
+        const trendingMovies = [
+            { id: 5, title: 'AAKHRI SAWAL (2026)', year: '2026', rating: 8.4, genre: 'Action/Thriller', hd: true, top: true, thumb: 'https://i.postimg.cc/7YRTfCLW/aebedea565116005359ffa4b29344622.jpg' },
+            { id: 6, title: 'HEROPANTI 2 (2026)', year: '2026', rating: 7.9, genre: 'Action/Romance', hd: true, top: true, thumb: 'https://i.postimg.cc/B6JjdHhs/cc85501c88788a33530cbf963ff1bb55.jpg' },
+            { id: 7, title: 'CHANAKYA (2026)', year: '2026', rating: 8.1, genre: 'Action/Drama', hd: true, top: false, thumb: 'https://i.postimg.cc/DySSk2cx/8badd3a6b6f9c2f1e7f223a741ac1f99.jpg' },
+            { id: 8, title: 'BETABIYAN (2026)', year: '2026', rating: 7.6, genre: 'Romantic/Thriller', hd: true, top: false, thumb: 'https://i.postimg.cc/0N0Qdr9Z/04e26bb704624412690bb03682f3489d.jpg' }
+        ];
+
+        const apks = [
+            { id: 1, name: 'Netflix Premium v8.12', size: '24 MB', ver: '8.12.0', icon: '📺' },
+            { id: 2, name: 'Spotify Mod v9.0', size: '18 MB', ver: '9.0.2', icon: '🎵' },
+            { id: 3, name: 'MX Player Pro v1.62', size: '32 MB', ver: '1.62.0', icon: '🎬' },
+            { id: 4, name: 'YouTube Vanced v19.8', size: '28 MB', ver: '19.08.34', icon: '▶️' }
+        ];
+
+        // ===== RENDER MOVIES =====
+        function renderMovies(containerId, data) {
+            const grid = document.getElementById(containerId);
+            grid.innerHTML = '';
+
+            data.forEach((movie, index) => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.style.animationDelay = (index * 0.06) + 's';
+
+                card.innerHTML = `
+                    <div class="thumb">
+                        <img src="${movie.thumb}" alt="${movie.title}" loading="lazy" />
+                        ${movie.top ? '<div class="trending-badge">🔥 Top</div>' : ''}
+                        ${movie.hd ? '<div class="hd-badge">HD</div>' : ''}
+                        <div class="overlay">
+                            <div class="play-icon">▶</div>
+                        </div>
+                    </div>
+                    <div class="info">
+                        <div class="title">${movie.title}</div>
+                        <div class="meta">
+                            <span>📅 ${movie.year}</span>
+                            <span>🎭 ${movie.genre}</span>
+                        </div>
+                        <div class="rating">
+                            <span class="stars">⭐⭐⭐${movie.rating >= 8 ? '⭐' : ''}${movie.rating >= 8.5 ? '⭐' : ''}</span>
+                            <span class="score">${movie.rating}/10</span>
+                        </div>
+                        <button class="watch-btn">▶ Watch Now</button>
+                    </div>
+                `;
+
+                card.querySelector('.watch-btn').addEventListener('click', () => {
+                    document.querySelector('.featured-section').scrollIntoView({ behavior: 'smooth' });
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ===== RENDER APKS =====
+        function renderApks() {
+            const grid = document.getElementById('apkGrid');
+            grid.innerHTML = '';
+
+            apks.forEach((apk, index) => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.style.animationDelay = (index * 0.06) + 's';
+
+                card.innerHTML = `
+                    <div class="thumb" style="background:linear-gradient(135deg,#fff5f5,#ffe8e8);display:flex;align-items:center;justify-content:center;font-size:52px;">
+                        ${apk.icon}
+                    </div>
+                    <div class="info">
+                        <div class="title">${apk.name}</div>
+                        <div class="meta">
+                            <span>📦 ${apk.size}</span>
+                            <span>v${apk.ver}</span>
+                        </div>
+                        <button class="watch-btn">⬇ Download APK</button>
+                    </div>
+                `;
+
+                card.querySelector('.watch-btn').addEventListener('click', () => {
+                    alert(`📦 Downloading ${apk.name}...`);
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ===== TAB SWITCHING =====
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const sections = {
+            movies: document.getElementById('section-movies'),
+            trending: document.getElementById('section-trending'),
+            apk: document.getElementById('section-apk')
+        };
+
+        function switchTab(tabName) {
+            Object.values(sections).forEach(s => s.classList.remove('active'));
+            if (sections[tabName]) sections[tabName].classList.add('active');
+
+            tabBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tabName);
+            });
+        }
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        // ===== INIT =====
+        renderMovies('movieGrid', movies);
+        renderMovies('trendingGrid', trendingMovies);
+        renderApks();
+    </script>
+
+</body>
+</html>
