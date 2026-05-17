@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MovieApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #e50914;
+    --red-dark: #b0060f;
+    --white: #ffffff;
+    --bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --text: #111111;
+    --subtext: #555555;
+    --nav-h: 64px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: var(--nav-h);
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+
+  .logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--red);
+  }
+
+  .search-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid #e0e0e0;
+  }
+
+  .search-wrap input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 9px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    outline: none;
+    color: var(--text);
+  }
+
+  .search-wrap button {
+    background: var(--red);
+    border: none;
+    padding: 9px 14px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  /* ── CATEGORY PILLS ── */
+  .pills-wrap {
+    background: #fff;
+    padding: 10px 14px 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .pills-wrap::-webkit-scrollbar { display: none; }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 2px solid var(--red);
+    color: var(--red);
+    font-weight: 700;
+    font-size: 13px;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: all .2s;
+    background: #fff;
+  }
+
+  .pill.active, .pill:hover {
+    background: var(--red);
+    color: #fff;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--red);
+    padding: 18px 14px 8px;
+  }
+
+  /* ── BANNER CARD ── */
+  .banner {
+    margin: 0 14px 10px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    height: 190px;
+    background: linear-gradient(135deg, #1a1a2e, #e50914);
+    box-shadow: 0 4px 18px rgba(229,9,20,.25);
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+    cursor: pointer;
+  }
+
+  .banner-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,.5);
+    line-height: 1;
+  }
+
+  .banner-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,.8);
+    margin-top: 2px;
+  }
+
+  .banner-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--red);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── CARD GRID (for banners) ── */
+  .banner2 {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  }
+
+  /* ── APP GRID ── */
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    padding: 0 14px 14px;
+  }
+
+  .app-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 14px 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s;
+    border: 1.5px solid #efefef;
+  }
+
+  .app-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(229,9,20,.15); }
+
+  .app-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--red), #ff6b6b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .app-name {
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .app-cat {
+    font-size: 10px;
+    color: var(--subtext);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* ── MOVIE LIST PAGE ── */
+  .movie-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0 14px 14px;
+  }
+
+  .movie-row {
+    background: var(--card-bg);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    cursor: pointer;
+    transition: transform .18s;
+    border: 1.5px solid #efefef;
+  }
+
+  .movie-row:hover { transform: translateX(4px); }
+
+  .movie-thumb {
+    width: 90px;
+    height: 110px;
+    background: linear-gradient(135deg, #1a1a2e, #e50914);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+
+  .movie-info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .movie-title {
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .movie-meta {
+    font-size: 12px;
+    color: var(--subtext);
+  }
+
+  .movie-tag {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 10px;
+    width: fit-content;
+    margin-top: 4px;
+  }
+
+  /* ── LOGIN PAGE ── */
+  .login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px;
+< truncated lines 289-481 >
+  .mini-card-5 { background: linear-gradient(135deg, #005c97, #363795); }
+
+  .mini-card-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,.5);
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <img src="https://i.postimg.cc/bNzXXs5R/Picsart-26-05-07-21-15-13-901.png" alt="Logo" class="logo" onerror="this.style.background='#e50914';this.removeAttribute('src')">
+  <div class="search-wrap">
+    <input type="text" placeholder="Search movies, apps..." id="searchInput">
+    <button onclick="doSearch()">🔍</button>
+  </div>
+</div>
+
+<!-- CATEGORY PILLS -->
+<div class="pills-wrap" id="pillsWrap"></div>
+
+<!-- ═══════════════ HOME PAGE ═══════════════ -->
+<div class="page active" id="page-home">
+
+  <div class="section-label">🎬 Featured Movies</div>
+
+  <div class="scroll-x">
+    <div class="mini-card" onclick="goPage('movie')">
+      <div class="mini-card-title">Avengers</div>
+    </div>
+    <div class="mini-card mini-card-2" onclick="goPage('movie')">
+      <div class="mini-card-title">Inception</div>
+    </div>
+    <div class="mini-card mini-card-3" onclick="goPage('movie')">
+      <div class="mini-card-title">Interstellar</div>
+    </div>
+    <div class="mini-card mini-card-4" onclick="goPage('movie')">
+      <div class="mini-card-title">Spider-Man</div>
+    </div>
+    <div class="mini-card mini-card-5" onclick="goPage('movie')">
+      <div class="mini-card-title">The Batman</div>
+    </div>
+  </div>
+
+  <div class="section-label">📦 Featured Apps</div>
+
+  <div class="banner" onclick="goPage('app')" style="background: linear-gradient(135deg, #0f2027, #203a43);">
+    <div>
+      <div class="banner-title">CapCut</div>
+      <div class="banner-sub">Best Video Editing App</div>
+    </div>
+    <div class="banner-badge">FREE</div>
+  </div>
+
+  <div class="section-label">🔥 Trending Now</div>
+
+  <div class="scroll-x">
+    <div class="mini-card mini-card-3">
+      <div class="mini-card-title">Top Gun 2</div>
+    </div>
+    <div class="mini-card mini-card-4">
+      <div class="mini-card-title">Dune 2</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-card-title">Deadpool 3</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ MOVIE PAGE ═══════════════ -->
+<div class="page" id="page-movie">
+
+  <div class="section-label">🎥 Movies</div>
+
+  <div class="movie-list">
+    <div class="movie-row">
+      <div class="movie-thumb">🎬</div>
+      <div class="movie-info">
+        <div class="movie-title">Avengers: Endgame</div>
+        <div class="movie-meta">2019 • 3h 1m • English</div>
+        <div class="movie-tag">Hollywood</div>
+      </div>
+    </div>
+    <div class="movie-row">
+      <div class="movie-thumb" style="background: linear-gradient(135deg, #134e5e, #71b280);">🎥</div>
+      <div class="movie-info">
+        <div class="movie-title">Pathaan</div>
+        <div class="movie-meta">2023 • 2h 26m • Hindi</div>
+        <div class="movie-tag">Bollywood</div>
+      </div>
+    </div>
+    <div class="movie-row">
+      <div class="movie-thumb" style="background: linear-gradient(135deg, #373b44, #4286f4);">🍿</div>
+      <div class="movie-info">
+        <div class="movie-title">Inception</div>
+        <div class="movie-meta">2010 • 2h 28m • English</div>
+        <div class="movie-tag">Sci-Fi</div>
+      </div>
+    </div>
+    <div class="movie-row">
+      <div class="movie-thumb" style="background: linear-gradient(135deg, #c94b4b, #4b134f);">🎞</div>
+      <div class="movie-info">
+        <div class="movie-title">Comedy Nights</div>
+        <div class="movie-meta">2024 • 1h 45m • Bengali</div>
+        <div class="movie-tag">Comedy</div>
+      </div>
+    </div>
+    <div class="movie-row">
+      <div class="movie-thumb" style="background: linear-gradient(135deg, #005c97, #363795);">🎦</div>
+      <div class="movie-info">
+        <div class="movie-title">Interstellar</div>
+        <div class="movie-meta">2014 • 2h 49m • English</div>
+        <div class="movie-tag">Hollywood</div>
+      </div>
+    </div>
+    <div class="movie-row">
+      <div class="movie-thumb" style="background: linear-gradient(135deg, #1a1a2e, #16213e);">📽</div>
+      <div class="movie-info">
+        <div class="movie-title">RRR</div>
+        <div class="movie-meta">2022 • 3h 7m • Telugu</div>
+        <div class="movie-tag">Action</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ APP PAGE ═══════════════ -->
+<div class="page" id="page-app">
+
+  <div class="section-label">✂️ Editing Apps</div>
+  <div class="app-grid">
+    <div class="app-card">
+      <div class="app-icon">✂️</div>
+      <div class="app-name">CapCut</div>
+      <div class="app-cat">Video Editing</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #4286f4, #373b44);">🎨</div>
+      <div class="app-name">Picsart</div>
+      <div class="app-cat">Photo Edit</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #134e5e, #71b280);">🎵</div>
+      <div class="app-name">InShot</div>
+      <div class="app-cat">Video & Music</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #c94b4b, #4b134f);">🎬</div>
+      <div class="app-name">Kinemaster</div>
+      <div class="app-cat">Pro Editing</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #005c97, #363795);">🌟</div>
+      <div class="app-name">Adobe</div>
+      <div class="app-cat">Creative Suite</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #f7971e, #ffd200);">📸</div>
+      <div class="app-name">Snapseed</div>
+      <div class="app-cat">Photo Edit</div>
+    </div>
+  </div>
+
+  <div class="section-label">📚 Education Apps</div>
+  <div class="app-grid">
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">📖</div>
+      <div class="app-name">Duolingo</div>
+      <div class="app-cat">Language</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #ee0979, #ff6a00);">🧮</div>
+      <div class="app-name">Khan Academy</div>
+      <div class="app-cat">Learning</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #1d976c, #93f9b9);">🔬</div>
+      <div class="app-name">Coursera</div>
+      <div class="app-cat">Courses</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #4568dc, #b06ab3);">📝</div>
+      <div class="app-name">10 Minute School</div>
+      <div class="app-cat">Bangla</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #f7971e, #ffd200);">💡</div>
+      <div class="app-name">Udemy</div>
+      <div class="app-cat">Skills</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon" style="background: linear-gradient(135deg, #0f0c29, #302b63);">🌐</div>
+      <div class="app-name">Grammarly</div>
+      <div class="app-cat">English</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ LOGIN PAGE ═══════════════ -->
+<div class="page" id="page-login">
+  <div class="login-page">
+    <img src="https://i.postimg.cc/bNzXXs5R/Picsart-26-05-07-21-15-13-901.png" alt="Logo" class="login-logo" onerror="this.style.background='#e50914';this.removeAttribute('src')">
+    <div class="login-title">Welcome Back</div>
+    <div class="login-sub">Sign in to continue</div>
+
+    <div class="login-form">
+      <input type="email" placeholder="Email Address">
+      <input type="password" placeholder="Password">
+      <button class="login-btn">LOGIN</button>
+      <div class="login-divider">── or ──</div>
+      <div class="register-link">Don't have an account? <span>Register Now</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ BOTTOM NAV ═══════════════ -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="goPage('home')">
+    <div class="nav-icon">🏠</div>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" id="nav-movie" onclick="goPage('movie')">
+    <div class="nav-icon">🎬</div>
+    <span>Movie</span>
+  </div>
+  <div class="nav-item" id="nav-app" onclick="goPage('app')">
+    <div class="nav-icon">📦</div>
+    <span>App</span>
+  </div>
+  <div class="nav-item" id="nav-login" onclick="goPage('login')">
+    <div class="nav-icon">👤</div>
+    <span>Login</span>
+  </div>
+</div>
+
+<script>
+  // ── PILLS CONFIG ──
+  const pillsConfig = {
+    home: ['All', 'Trending', 'New', 'Popular', 'Top Rated'],
+    movie: ['All', 'Hollywood', 'Bollywood', 'Comedy', 'Action', 'Sci-Fi', 'Bengali'],
+    app: ['All', 'Editing', 'Education', 'Games', 'Social', 'Tools'],
+    login: []
+  };
+
+  function renderPills(page) {
+    const wrap = document.getElementById('pillsWrap');
+    const pills = pillsConfig[page] || [];
+    if (pills.length === 0) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    wrap.innerHTML = pills.map((p, i) =>
+      `<span class="pill ${i === 0 ? 'active' : ''}" onclick="setPill(this)">${p}</span>`
+    ).join('');
+  }
+
+  function setPill(el) {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ── PAGE NAVIGATION ──
+  function goPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    document.getElementById('page-' + name).classList.add('active');
+    const navEl = document.getElementById('nav-' + name);
+    if (navEl) navEl.classList.add('active');
+    renderPills(name);
+    window.scrollTo(0, 0);
+  }
+
+  function doSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    if (q) alert('Searching: ' + q);
+  }
+
+  // init
+  renderPills('home');
+</script>
+</body>
+</html>
